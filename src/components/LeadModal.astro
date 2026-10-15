@@ -1,7 +1,7 @@
 ---
 import LeadForm from './LeadForm.astro';
-import Horseman from './Horseman.astro';
-import StarRing from './StarRing.astro';
+import Emblem from './Emblem.astro';
+import Ornament from './Ornament.astro';
 const attrs = Astro.props;
 ---
 
@@ -11,11 +11,12 @@ const attrs = Astro.props;
       <span></span><span></span>
     </button>
     <aside class="ld-side" aria-hidden="true">
-      <StarRing count={12} size={4} class="ld-ring" />
-      <Horseman class="ld-horse" />
+      <Emblem class="ld-emblem" />
+      <p class="ld-hand">ждём на тренировке!</p>
+      <Ornament class="ld-orn" cell={3} />
     </aside>
     <div class="ld-body">
-      <span class="eyebrow">Запись в «Пересвет»</span>
+      <span class="eyebrow">запись в «Пересвет»</span>
       <h2 class="ld-title" id="lead-dialog-title">Приходите на первую тренировку</h2>
       <p class="muted ld-text">Оставьте телефон. Тренер перезвонит, ответит на вопросы и подберёт группу. Набор детей с 5 лет.</p>
       <LeadForm id="modal" compact />
@@ -42,12 +43,19 @@ const attrs = Astro.props;
   .ld-inner { display: grid; grid-template-columns: 300px 1fr; position: relative; }
   .ld-side {
     position: relative;
-    background: radial-gradient(circle at 50% 45%, var(--banner-hi), var(--banner) 45%, var(--night) 100%);
+    background: radial-gradient(circle at 50% 42%, var(--banner-hi), var(--banner) 48%, var(--night) 100%);
     min-height: 100%;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 36px 24px 48px;
   }
-  .ld-side :global(.ld-ring) { position: absolute; width: 130%; left: -15%; top: 50%; transform: translateY(-50%); color: var(--silver); opacity: 0.9; }
-  .ld-side :global(.ld-horse) { position: absolute; width: 62%; left: 19%; top: 50%; transform: translateY(-50%); color: var(--gold-hi); }
+  .ld-side :global(.ld-emblem) { width: 100%; max-width: 236px; }
+  .ld-hand { font: 600 28px/1 var(--f-hand); color: var(--gold-hi); transform: rotate(-4deg); }
+  .ld-side :global(.ld-orn) { position: absolute; left: 0; right: 0; bottom: 0; }
   .ld-body { padding: clamp(28px, 4vw, 48px); display: grid; gap: 16px; align-content: start; }
   .ld-title { font: 600 clamp(30px, 3.6vw, 44px)/1.02 var(--f-display); }
   .ld-text { margin-bottom: 8px; max-width: 46ch; }

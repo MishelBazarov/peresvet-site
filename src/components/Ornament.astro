@@ -1,0 +1,52 @@
+---
+// Полоса вышивки крестиком: ромб-оберег красной нитью с золотом, между ромбами — малый крест.
+// Каждый символ сетки — один стежок: r — красная нить, g — золотая, точка — пусто.
+interface Props {
+  class?: string;
+  cell?: number; // размер одного стежка в px
+}
+const { class: cls = '', cell = 4 } = Astro.props;
+
+const motif = [
+  'g.g.g.g.g.g.g.g.g.g.',
+  '....................',
+  '.......r............',
+  '......r.r...........',
+  '.....r.g.r..........',
+  '....r.ggg.r.....g...',
+  '...r.ggrgg.r...grg..',
+  '....r.ggg.r.....g...',
+  '.....r.g.r..........',
+  '......r.r...........',
+  '.......r............',
+  '....................',
+  'g.g.g.g.g.g.g.g.g.g.',
+];
+const cols = motif[0].length;
+const rows = motif.length;
+const inset = cell * 0.2;
+const stitches = motif.flatMap((row, y) =>
+  [...row].flatMap((ch, x) => {
+    if (ch === '.') return [];
+    const x0 = x * cell + inset, y0 = y * cell + inset;
+    const x1 = (x + 1) * cell - inset, y1 = (y + 1) * cell - inset;
+    return [{ d: `M${x0} ${y0}L${x1} ${y1}M${x1} ${y0}L${x0} ${y1}`, c: ch }];
+  }),
+);
+const id = `orn-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<svg class:list={['ornament', cls]} width="100%" height={rows * cell} aria-hidden="true">
+  <defs>
+    <pattern id={id} width={cols * cell} height={rows * cell} patternUnits="userSpaceOnUse">
+      {stitches.map((s) => <path d={s.d} class={s.c === 'r' ? 'st-r' : 'st-g'} stroke-width={cell * 0.3} />)}
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill={`url(#${id})`} />
+</svg>
+
+<style>
+  .ornament { display: block; width: 100%; }
+  .st-r { stroke: var(--shield); stroke-linecap: round; }
+  .st-g { stroke: var(--gold); stroke-linecap: round; }
+</style>

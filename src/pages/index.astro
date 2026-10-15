@@ -1,19 +1,19 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import StarRing from '../components/StarRing.astro';
-import Horseman from '../components/Horseman.astro';
+import Emblem from '../components/Emblem.astro';
+import Ornament from '../components/Ornament.astro';
+import Scribble from '../components/Scribble.astro';
 import PersonCard from '../components/PersonCard.astro';
 import NewsCard from '../components/NewsCard.astro';
 import LeadForm from '../components/LeadForm.astro';
-import { club, halls, disciplines } from '../data/site';
+import { club, halls, disciplines, plural } from '../data/site';
 
 const trenery = (await getCollection('trenery')).sort((a, b) => a.data.order - b.data.order);
 const boytsy = (await getCollection('boytsy')).sort((a, b) => a.data.order - b.data.order).slice(0, 3);
 const novosti = (await getCollection('novosti')).sort((a, b) => +b.data.date - +a.data.date).slice(0, 3);
 const masters = trenery.filter((t) => t.data.regalia.some((r) => /^мастер спорта/i.test(r))).length;
-
-const marquee = disciplines.map((d) => d.title);
+const hall = halls[0];
 
 const schema = {
   '@context': 'https://schema.org',
@@ -39,64 +39,48 @@ const schema = {
 >
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(schema)} />
 
-  <!-- ПЕРВЫЙ ЭКРАН · «Знамя» -->
+  <!-- ПЕРВЫЙ ЭКРАН -->
   <section class="hero">
     <div class="hero-bg" aria-hidden="true"></div>
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <span class="eyebrow" data-intro>Центр традиционных боевых искусств</span>
+        <span class="eyebrow" data-intro>центр традиционных боевых искусств</span>
         <h1 class="hero-title gold-text" data-split>Пересвет</h1>
-        <p class="lead hero-lead" data-intro>Рукопашный и универсальный бой в Армавире. Набор мальчиков и девочек с {club.minAge} лет.</p>
-        <div class="hero-actions" data-intro>
-          <button type="button" class="btn btn-gold" data-open-lead>Записаться на тренировку</button>
-          <a class="btn btn-ghost" href={club.phoneHref}>{club.phone}</a>
+        <p class="lead hero-lead" data-intro>Рукопашный и универсальный бой в Армавире.</p>
+        <div class="hero-cta" data-intro>
+          <div class="hero-actions">
+            <button type="button" class="btn btn-gold" data-open-lead>Записаться на тренировку</button>
+            <a class="btn btn-ghost" href={club.phoneHref}>{club.phone}</a>
+          </div>
+          <p class="hero-note">
+            <Scribble variant="arrow-up" class="hn-arrow" />
+            <span class="hand">с {club.minAge} лет —<br />и мальчики, и девочки</span>
+          </p>
         </div>
       </div>
       <div class="hero-emblem" data-intro>
-        <div class="he-inner" data-parallax="-0.14">
-          <StarRing count={12} size={3.2} class="he-ring" />
-          <div class="he-glow"></div>
-          <Horseman class="he-horse" />
+        <div data-parallax="-0.12">
+          <Emblem class="he-emblem" label="Герб клуба: Пересвет на коне в кольце звёзд" />
         </div>
       </div>
     </div>
-    <div class="wrap hero-foot" data-intro>
-      <div><span class="hf-label">Направления</span><span>Рукопашный бой · Универсальный бой · РРБ</span></div>
-      <div><span class="hf-label">Залы</span><span>{halls.map((h) => h.address.split(',').slice(0, 2).join(',')).join(' · ')}</span></div>
-      <a href="#klub" class="hf-scroll" aria-label="Листать вниз"><span></span></a>
-    </div>
+    <Ornament class="hero-orn" cell={5} />
   </section>
-
-  <!-- БЕГУЩАЯ СТРОКА · «Арена» -->
-  <div class="marquee" aria-hidden="true">
-    <div class="mq-track" data-marquee>
-      {[0, 1].map(() => (
-        <div class="mq-group">
-          {marquee.map((t) => (
-            <>
-              <span class="mq-item">{t}</span>
-              <svg class="mq-star" viewBox="-1 -1 2 2"><path d="M0 -1Q.13 -.13 1 0Q.13 .13 0 1Q-.13 .13 -1 0Q-.13 -.13 0 -1Z" transform="rotate(45)" fill="currentColor" /></svg>
-            </>
-          ))}
-        </div>
-      ))}
-    </div>
-  </div>
 
   <!-- О КЛУБЕ -->
   <section class="section about" id="klub">
     <div class="wrap about-grid">
       <div class="about-text">
-        <span class="eyebrow" data-reveal>О клубе</span>
-        <h2 class="h2" data-reveal>Спорт и традиция русского воинского искусства</h2>
+        <span class="eyebrow" data-reveal>о клубе</span>
+        <h2 class="h2" data-reveal>Спорт и <span class="hl">традиция<Scribble variant="underline" class="hl-line" /></span> русского воинского искусства</h2>
         <p class="lead" data-reveal>Клуб носит имя Пересвета — инока-богатыря, вышедшего на поединок перед Куликовской битвой.</p>
         <p class="muted" data-reveal>Мы готовим спортсменов по рукопашному и универсальному бою и сохраняем традиции: историю воинского искусства России, строевую подготовку, оздоровительную гимнастику «Здрава», боевую акробатику.</p>
         <a href="/o-klube/" class="link-arrow" data-reveal>О клубе подробнее <span>→</span></a>
       </div>
       <dl class="facts">
         <div data-reveal><dt class="sport">{club.minAge}+</dt><dd>лет — возраст, с которого принимаем детей</dd></div>
-        <div data-reveal><dt class="sport">{halls.length}</dt><dd>{halls.length === 2 ? 'зала' : 'залов'} в Армавире</dd></div>
-        <div data-reveal><dt class="sport">{masters}</dt><dd>мастера спорта в тренерском составе</dd></div>
+        <div data-reveal><dt class="sport">{masters}</dt><dd>{plural(masters, 'мастер', 'мастера', 'мастеров')} спорта в тренерском составе</dd></div>
+        <div data-reveal><dt class="sport">{disciplines.length}</dt><dd>{plural(disciplines.length, 'направление', 'направления', 'направлений')}: от спорта до оздоровительной гимнастики</dd></div>
       </dl>
     </div>
   </section>
@@ -104,15 +88,12 @@ const schema = {
   <!-- НАПРАВЛЕНИЯ -->
   <section class="section disciplines section-banner">
     <div class="wrap">
-      <div class="sec-head">
-        <span class="eyebrow" data-reveal>Направления</span>
-        <h2 class="h2" data-reveal>Чем занимаемся</h2>
-      </div>
+      <h2 class="h2 sec-title" data-reveal>Чем занимаемся</h2>
       <ul class="disc-list">
         {disciplines.map((d) => (
           <li class="disc" data-reveal>
             <h3 class="disc-title">{d.title}</h3>
-            <span class="chip">{d.tag}</span>
+            <span class="disc-tag hand">{d.tag.toLowerCase()}</span>
             <p class="disc-text">{d.text}</p>
           </li>
         ))}
@@ -124,10 +105,7 @@ const schema = {
   <section class="section">
     <div class="wrap">
       <div class="sec-head-row">
-        <div class="sec-head">
-          <span class="eyebrow" data-reveal>Тренеры</span>
-          <h2 class="h2" data-reveal>Кто ведёт тренировки</h2>
-        </div>
+        <h2 class="h2" data-reveal>Кто ведёт тренировки</h2>
         <a href="/trenery/" class="link-arrow" data-reveal>Все тренеры <span>→</span></a>
       </div>
       <div class="coaches">
@@ -143,7 +121,7 @@ const schema = {
     <div class="wrap">
       <div class="sec-head-row">
         <div class="sec-head">
-          <span class="eyebrow" data-reveal>Новости и соревнования</span>
+          <span class="eyebrow" data-reveal>новости и соревнования</span>
           <h2 class="arena-h2" data-reveal>Турниры. Медали. Жизнь клуба</h2>
         </div>
         <a href="/novosti/" class="link-arrow" data-reveal>Все новости <span>→</span></a>
@@ -158,11 +136,10 @@ const schema = {
 
   <!-- ЗАЛ СЛАВЫ · «Арена» -->
   <section class="section section-arena hall-of-fame">
-    <StarRing count={16} size={2.6} class="hof-ring" />
     <div class="wrap">
       <div class="sec-head-row">
         <div class="sec-head">
-          <span class="eyebrow" data-reveal>Зал славы</span>
+          <span class="eyebrow" data-reveal>зал славы</span>
           <h2 class="arena-h2" data-reveal>Лучшие бойцы клуба</h2>
         </div>
         <a href="/boytsy/" class="link-arrow" data-reveal>Все бойцы <span>→</span></a>
@@ -175,32 +152,30 @@ const schema = {
     </div>
   </section>
 
-  <!-- ЗАЛЫ -->
-  <section class="section">
-    <div class="wrap">
-      <div class="sec-head-row">
-        <div class="sec-head">
-          <span class="eyebrow" data-reveal>Где заниматься</span>
-          <h2 class="h2" data-reveal>Залы в Армавире</h2>
+  <!-- ЗАЛ -->
+  <section class="section place">
+    <div class="wrap place-grid">
+      <div class="place-copy">
+        <h2 class="h2" data-reveal>Где тренируемся</h2>
+        <div class="place-addr-wrap" data-reveal>
+          {hall.isNew && <span class="place-new hand">новый зал!</span>}
+          <p class="place-addr">{hall.address}</p>
+          {hall.note && <p class="muted">{hall.note}, {club.city}</p>}
         </div>
-        <a href="/zaly/" class="link-arrow" data-reveal>Залы и расписание <span>→</span></a>
+        <div class="place-links" data-reveal>
+          <a href={hall.yandex} target="_blank" rel="noopener" class="link-arrow">Яндекс Карты <span>↗</span></a>
+          {hall.gis && <a href={hall.gis} target="_blank" rel="noopener" class="link-arrow">2ГИС <span>↗</span></a>}
+          <a href="/zaly/" class="link-arrow">Расписание <span>→</span></a>
+        </div>
       </div>
-      <div class="halls">
-        {halls.map((h) => (
-          <article class="hall card" data-reveal>
-            <div class="hall-top">
-              <span class="sport hall-city">Армавир</span>
-              {h.isNew && <span class="chip chip-new">Новый адрес</span>}
-            </div>
-            <h3 class="h3">{h.name}</h3>
-            <p class="hall-addr">{h.address}</p>
-            {h.note && <p class="muted">{h.note}</p>}
-            <div class="hall-links">
-              <a href={h.yandex} target="_blank" rel="noopener" class="link-arrow">Яндекс Карты <span>↗</span></a>
-              {h.gis && <a href={h.gis} target="_blank" rel="noopener" class="link-arrow">2ГИС <span>↗</span></a>}
-            </div>
-          </article>
-        ))}
+      <div class="place-map" aria-hidden="true" data-reveal>
+        <svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice">
+          <path d="M-10 170C60 160 120 150 190 168S330 190 410 150" class="m-river" />
+          <path d="M40 -10L80 270M250 -10L210 270M-10 70L410 50M-10 220L410 205M330 -10L360 270" class="m-road" />
+          <path d="M120 -10L150 270M-10 120L410 110" class="m-street" />
+        </svg>
+        <span class="pin"></span>
+        <span class="pin-label hand">мы здесь</span>
       </div>
     </div>
   </section>
@@ -209,7 +184,6 @@ const schema = {
   <section class="section section-banner signup" id="zapis">
     <div class="wrap signup-grid">
       <div class="signup-copy">
-        <span class="eyebrow" data-reveal>Запись</span>
         <h2 class="h2" data-reveal>Первая тренировка — знакомство</h2>
         <ol class="steps">
           <li data-reveal><b>Заявка</b><span>Оставьте телефон в форме или позвоните сами.</span></li>
@@ -217,8 +191,14 @@ const schema = {
           <li data-reveal><b>Тренировка</b><span>Приходите в спортивной одежде. Что взять с собой, <a href="/blog/pervaya-trenirovka/">рассказали в блоге</a>.</span></li>
         </ol>
       </div>
-      <div class="signup-form card" data-reveal>
-        <LeadForm id="home" />
+      <div class="signup-side">
+        <p class="signup-note" data-reveal>
+          <span class="hand">тренер перезвонит сам</span>
+          <Scribble variant="arrow" class="sn-arrow" />
+        </p>
+        <div class="signup-form card" data-reveal>
+          <LeadForm id="home" />
+        </div>
       </div>
     </div>
   </section>
@@ -228,7 +208,7 @@ const schema = {
   /* ---------- первый экран ---------- */
   .hero {
     position: relative;
-    min-height: min(100svh, 1000px);
+    min-height: min(100svh, 980px);
     display: grid;
     grid-template-rows: 1fr auto;
     padding-top: var(--header-h);
@@ -240,19 +220,12 @@ const schema = {
     inset: 0;
     z-index: -1;
     background:
-      radial-gradient(60% 70% at 72% 45%, rgba(45, 86, 196, 0.75) 0%, rgba(28, 63, 158, 0.45) 35%, transparent 70%),
-      radial-gradient(50% 60% at 0% 100%, rgba(28, 63, 158, 0.45), transparent 70%),
+      radial-gradient(58% 70% at 74% 46%, rgba(45, 86, 196, 0.72) 0%, rgba(28, 63, 158, 0.42) 38%, transparent 72%),
+      radial-gradient(50% 60% at 0% 100%, rgba(28, 63, 158, 0.4), transparent 70%),
       linear-gradient(180deg, var(--night) 0%, #0a1634 100%);
   }
-  .hero-bg::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 0 0;
-    height: 30%;
-    background: linear-gradient(180deg, transparent, var(--night));
-  }
-  .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; align-items: center; gap: clamp(24px, 4vw, 64px); padding-block: clamp(32px, 6vw, 72px); }
-  .hero-copy { display: grid; gap: 26px; justify-items: start; position: relative; z-index: 2; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; align-items: center; gap: clamp(24px, 4vw, 64px); padding-block: clamp(32px, 5vw, 64px); }
+  .hero-copy { display: grid; gap: 24px; justify-items: start; position: relative; z-index: 2; }
   .hero-title {
     font: 600 clamp(56px, 8.4vw, 156px)/0.84 var(--f-display);
     text-transform: uppercase;
@@ -261,38 +234,27 @@ const schema = {
     white-space: nowrap;
   }
   .hero-lead { max-width: 30ch; }
+  .hero-cta { display: grid; gap: 4px; justify-items: start; }
   .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
-  .hero-emblem { position: relative; width: 100%; max-width: 600px; justify-self: center; aspect-ratio: 1; }
-  .he-inner { position: absolute; inset: 0; }
-  .hero-emblem :global(.he-ring) { position: absolute; inset: 0; width: 100%; color: var(--silver); filter: drop-shadow(0 0 12px rgba(201, 209, 227, 0.35)); animation: ring-spin 180s linear infinite; }
-  .he-glow { position: absolute; inset: 18%; border-radius: 50%; background: radial-gradient(circle, rgba(232, 205, 140, 0.22), transparent 65%); filter: blur(10px); }
-  .hero-emblem :global(.he-horse) { position: absolute; left: 18%; top: 15%; width: 64%; color: var(--gold-hi); filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.45)); }
-  @keyframes ring-spin { to { transform: rotate(360deg); } }
-
-  .hero-foot { display: flex; align-items: center; gap: clamp(20px, 4vw, 56px); padding-block: 22px 32px; border-top: 1px solid var(--line-soft); }
-  .hero-foot > div { display: grid; gap: 6px; font-size: 15px; color: var(--ivory); }
-  .hf-label { font: 700 13px/1 var(--f-sport); letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); }
-  .hf-scroll { margin-left: auto; width: 30px; height: 50px; border: 1px solid var(--line); border-radius: 16px; position: relative; flex-shrink: 0; }
-  .hf-scroll span { position: absolute; left: 50%; top: 10px; width: 3px; height: 9px; margin-left: -1.5px; border-radius: 2px; background: var(--gold); animation: scroll-cue 2s var(--ease) infinite; }
-  @keyframes scroll-cue { 0% { opacity: 0; transform: translateY(-4px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(16px); } }
-
-  /* ---------- бегущая строка ---------- */
-  .marquee { overflow: hidden; background: var(--arena); border-block: 1px solid var(--line-soft); padding-block: clamp(18px, 2.4vw, 30px); }
-  .mq-track { display: flex; width: max-content; }
-  .mq-group { display: flex; align-items: center; flex-shrink: 0; }
-  .mq-item { font: 800 clamp(44px, 7vw, 104px)/0.9 var(--f-sport); text-transform: uppercase; color: transparent; -webkit-text-stroke: 1px rgba(238, 231, 215, 0.55); white-space: nowrap; padding-inline: 0.35em; }
-  .mq-item:nth-child(4n + 1) { color: var(--ivory); -webkit-text-stroke: 0; }
-  .mq-star { width: clamp(20px, 2.4vw, 34px); height: clamp(20px, 2.4vw, 34px); color: var(--gold); flex-shrink: 0; }
+  .hero-note { display: flex; align-items: flex-start; gap: 6px; margin: 0 0 0 28px; }
+  .hero-note :global(.hn-arrow) { width: 64px; flex-shrink: 0; margin-top: -6px; }
+  .hero-note .hand { padding-top: 26px; transform: rotate(-3deg); }
+  .hero-emblem { position: relative; width: 100%; max-width: 560px; justify-self: center; }
+  .hero-emblem :global(.he-emblem) { filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.35)); }
+  .hero :global(.hero-orn) { opacity: 0.9; }
 
   /* ---------- о клубе ---------- */
   .about-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: clamp(40px, 7vw, 120px); align-items: end; }
   .about-text { display: grid; gap: 24px; justify-items: start; max-width: 680px; }
-  .facts { margin: 0; display: grid; gap: 0; }
-  .facts > div { display: grid; grid-template-columns: 120px 1fr; align-items: baseline; gap: 20px; padding-block: 22px; border-top: 1px solid var(--line-soft); }
+  .hl { position: relative; white-space: nowrap; }
+  .hl :global(.hl-line) { position: absolute; left: -3%; width: 106%; bottom: -0.16em; height: 0.32em; }
+  .facts { margin: 0; display: grid; }
+  .facts > div { display: grid; grid-template-columns: 110px 1fr; align-items: baseline; gap: 20px; padding-block: 22px; border-top: 1px solid var(--line-soft); }
   .facts dt { font-size: clamp(56px, 6vw, 80px); line-height: 0.85; font-weight: 800; color: var(--gold-hi); }
   .facts dd { margin: 0; color: var(--mist); }
 
   /* ---------- направления ---------- */
+  .sec-title { margin-bottom: clamp(32px, 4vw, 56px); }
   .disc-list { list-style: none; margin: 0; padding: 0; }
   .disc {
     display: grid;
@@ -302,57 +264,65 @@ const schema = {
     padding-block: clamp(22px, 3vw, 34px);
     border-top: 1px solid var(--line-soft);
     position: relative;
-    transition: padding 0.5s var(--ease);
   }
   .disc:last-child { border-bottom: 1px solid var(--line-soft); }
   .disc::before { content: ''; position: absolute; left: 0; top: -1px; height: 1px; width: 100%; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.8s var(--ease); }
   .disc:hover::before { transform: scaleX(1); }
   .disc-title { font: 600 clamp(32px, 4.4vw, 60px)/1 var(--f-display); transition: color 0.4s, transform 0.6s var(--ease); }
   .disc:hover .disc-title { color: var(--gold-hi); transform: translateX(12px); }
-  .disc .chip { justify-self: start; }
+  .disc-tag { transform: rotate(-4deg); justify-self: start; }
   .disc-text { color: var(--mist); }
 
   /* ---------- тренеры, бойцы ---------- */
   .coaches { display: grid; grid-template-columns: 1.35fr 1fr 1fr; gap: clamp(18px, 2.4vw, 32px); align-items: start; }
   .arena-h2 { font: 800 clamp(44px, 6.5vw, 92px)/0.9 var(--f-sport); text-transform: uppercase; }
-  .hall-of-fame { overflow: hidden; border-top: 1px solid var(--line-soft); }
-  .hall-of-fame :global(.hof-ring) { position: absolute; width: 900px; right: -300px; top: -200px; color: var(--gold); opacity: 0.07; }
-  .fighters { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 2.4vw, 32px); position: relative; }
+  .hall-of-fame { border-top: 1px solid var(--line-soft); }
+  .fighters { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 2.4vw, 32px); }
 
-  /* ---------- залы ---------- */
-  .halls { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(18px, 2.4vw, 32px); }
-  .hall { padding: clamp(24px, 3vw, 40px); display: grid; gap: 12px; align-content: start; transition: border-color 0.4s, transform 0.6s var(--ease); }
-  .hall:hover { border-color: var(--line); transform: translateY(-4px); }
-  .hall-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-  .hall-city { color: var(--mist); font-weight: 700; font-size: 14px; letter-spacing: 0.2em; }
-  .hall-addr { font: 800 clamp(26px, 2.6vw, 34px)/1 var(--f-sport); text-transform: uppercase; }
-  .hall-links { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 12px; }
+  /* ---------- зал ---------- */
+  .place-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
+  .place-copy { display: grid; gap: 28px; justify-items: start; }
+  .place-addr-wrap { position: relative; display: grid; gap: 8px; justify-items: start; }
+  .place-new { transform: rotate(-5deg); margin-bottom: 2px; }
+  .place-addr { font: 800 clamp(36px, 4.4vw, 60px)/0.95 var(--f-sport); text-transform: uppercase; max-width: 12ch; }
+  .place-links { display: flex; gap: 22px 28px; flex-wrap: wrap; }
+  .place-map { position: relative; aspect-ratio: 400 / 260; border: 1px solid var(--line-soft); background: radial-gradient(circle at 52% 52%, rgba(45, 86, 196, 0.55), transparent 62%), var(--night-2); overflow: hidden; }
+  .place-map svg { width: 100%; height: 100%; }
+  .m-road { stroke: rgba(201, 209, 227, 0.28); stroke-width: 6; fill: none; }
+  .m-street { stroke: rgba(201, 209, 227, 0.16); stroke-width: 3; fill: none; }
+  .m-river { stroke: rgba(74, 111, 214, 0.55); stroke-width: 14; fill: none; stroke-linecap: round; }
+  .pin { position: absolute; left: 52%; top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 8px rgba(201, 165, 92, 0.22), 0 0 0 18px rgba(201, 165, 92, 0.08); }
+  .pin-label { position: absolute; left: calc(52% + 22px); top: calc(50% - 44px); transform: rotate(-5deg); }
 
   /* ---------- запись ---------- */
   .signup-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
   .signup-copy { display: grid; gap: 24px; }
   .steps { list-style: none; margin: 12px 0 0; padding: 0; counter-reset: step; display: grid; }
   .steps li { counter-increment: step; display: grid; grid-template-columns: 64px 1fr; gap: 4px 16px; padding-block: 18px; border-top: 1px solid var(--line-soft); }
-  .steps li::before { content: counter(step); grid-row: span 2; font: 800 48px/0.85 var(--f-sport); color: var(--gold); }
+  .steps li::before { content: counter(step); grid-row: span 2; font: 600 54px/0.8 var(--f-hand); color: var(--gold); }
   .steps b { font: 600 24px/1.1 var(--f-display); }
   .steps span { color: var(--mist); font-size: 15px; }
-  .signup-form { padding: clamp(24px, 3.4vw, 44px); background: rgba(8, 17, 39, 0.75); backdrop-filter: blur(8px); }
+  .signup-side { display: grid; gap: 0; }
+  .signup-note { display: flex; align-items: flex-end; justify-content: flex-end; gap: 4px; margin: 0 24px -6px 0; }
+  .signup-note .hand { transform: rotate(-3deg); padding-bottom: 30px; }
+  .signup-note :global(.sn-arrow) { width: 58px; transform: scaleX(-1) rotate(8deg); }
+  .signup-form { padding: clamp(24px, 3.4vw, 44px); background: rgba(8, 17, 39, 0.75); }
 
   /* ---------- адаптив ---------- */
   @media (max-width: 980px) {
     .hero-grid { grid-template-columns: 1fr; }
     .hero-title { font-size: clamp(56px, 15vw, 140px); }
-    .hero-emblem { order: -1; max-width: 360px; margin-top: 8px; }
-    .about-grid, .signup-grid { grid-template-columns: 1fr; }
+    .hero-emblem { order: -1; max-width: 340px; }
+    .about-grid, .signup-grid, .place-grid { grid-template-columns: 1fr; }
     .coaches { grid-template-columns: repeat(2, 1fr); }
     .coaches > :global(:first-child) { grid-column: 1 / -1; }
     .disc { grid-template-columns: 1fr auto; }
     .disc-text { grid-column: 1 / -1; }
   }
   @media (max-width: 680px) {
-    .hero-emblem { max-width: 260px; }
-    .hero-foot > div:nth-child(2) { display: none; }
-    .coaches, .fighters, .halls { grid-template-columns: 1fr; }
-    .facts > div { grid-template-columns: 88px 1fr; }
+    .hero-emblem { max-width: 250px; }
+    .hero-note { margin-left: 12px; }
+    .coaches, .fighters { grid-template-columns: 1fr; }
+    .facts > div { grid-template-columns: 84px 1fr; }
   }
 </style>

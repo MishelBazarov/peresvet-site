@@ -1,0 +1,28 @@
+---
+// Линии «от руки»: подчёркивание, обводка, стрелка. Прорисовываются, когда попадают в кадр.
+interface Props {
+  variant: 'underline' | 'circle' | 'arrow' | 'arrow-left' | 'arrow-up';
+  class?: string;
+}
+const { variant, class: cls = '' } = Astro.props;
+const shapes = {
+  underline: { vb: '0 0 240 18', sw: 3.2, d: ['M4 12C46 5 92 14 138 8S210 5 236 10'] },
+  circle: { vb: '0 0 220 84', sw: 2.4, d: ['M120 8C62 3 14 18 10 42C6 66 70 79 128 75C186 71 214 54 208 33C202 13 150 4 92 11'] },
+  arrow: { vb: '0 0 96 74', sw: 2.6, d: ['M6 10C34 6 62 22 74 56', 'M58 48L75 59L83 40'] },
+  'arrow-left': { vb: '0 0 96 74', sw: 2.6, d: ['M90 10C62 6 34 22 22 56', 'M38 48L21 59L13 40'] },
+  'arrow-up': { vb: '0 0 96 74', sw: 2.6, d: ['M88 66C60 66 30 54 20 18', 'M9 31L19 15L34 26'] },
+};
+const s = shapes[variant];
+---
+
+<svg class:list={['scribble', `scribble-${variant}`, cls]} viewBox={s.vb} aria-hidden="true" data-draw style={`--sw:${s.sw}`}>
+  {s.d.map((d) => <path d={d} pathLength="1" />)}
+</svg>
+
+<style>
+  .scribble { display: block; overflow: visible; fill: none; stroke: var(--gold-hi); stroke-width: var(--sw); stroke-linecap: round; stroke-linejoin: round; }
+  .scribble path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+  :global(html.motion) .scribble path { stroke-dashoffset: 1; transition: stroke-dashoffset 1.1s cubic-bezier(0.65, 0, 0.35, 1); }
+  :global(html.motion) .scribble.drawn path { stroke-dashoffset: 0; }
+  :global(html.motion) .scribble.drawn path + path { transition-delay: 0.9s; transition-duration: 0.35s; }
+</style>

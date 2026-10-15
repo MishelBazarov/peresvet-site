@@ -26,13 +26,17 @@ const { id, compact = false } = Astro.props;
         <option value="16+">Старше 16 лет / взрослый</option>
       </select>
     </div>
-    <div class="field">
-      <label for={`${id}-hall`}>Удобный зал</label>
-      <select class="input" id={`${id}-hall`} name="hall">
-        {halls.map((h) => <option value={h.id}>{h.address}</option>)}
-        <option value="any">Подскажите, где удобнее</option>
-      </select>
-    </div>
+    {halls.length > 1 ? (
+      <div class="field">
+        <label for={`${id}-hall`}>Удобный зал</label>
+        <select class="input" id={`${id}-hall`} name="hall">
+          {halls.map((h) => <option value={h.id}>{h.address}</option>)}
+          <option value="any">Подскажите, где удобнее</option>
+        </select>
+      </div>
+    ) : (
+      <input type="hidden" name="hall" value={halls[0].id} />
+    )}
     {!compact && (
       <div class="field lf-wide">
         <label for={`${id}-comment`}>Комментарий</label>

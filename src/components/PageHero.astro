@@ -1,5 +1,5 @@
 ---
-import StarRing from './StarRing.astro';
+import Ornament from './Ornament.astro';
 interface Crumb { href?: string; label: string }
 interface Props {
   eyebrow: string;
@@ -9,10 +9,11 @@ interface Props {
   arena?: boolean;
 }
 const { eyebrow, title, lead, crumbs = [], arena = false } = Astro.props;
+// надзаголовок пишется «от руки», со строчной буквы
+const note = eyebrow.charAt(0).toLowerCase() + eyebrow.slice(1);
 ---
 
 <header class:list={['page-hero', { arena }]}>
-  <StarRing class="ph-ring" count={16} />
   <div class="wrap">
     {crumbs.length > 0 && (
       <nav class="crumbs" aria-label="Навигация по разделам" data-intro>
@@ -25,38 +26,26 @@ const { eyebrow, title, lead, crumbs = [], arena = false } = Astro.props;
         ))}
       </nav>
     )}
-    <span class="eyebrow" data-intro>{eyebrow}</span>
+    <span class="eyebrow" data-intro>{note}</span>
     <h1 class:list={[arena ? 'arena-title' : 'h1 gold-text']} data-intro>{title}</h1>
     {lead && <p class="lead" data-intro>{lead}</p>}
     <slot />
   </div>
+  <Ornament class="ph-ornament" cell={4} />
 </header>
 
 <style>
   .page-hero {
     position: relative;
     overflow: hidden;
-    padding-block: calc(var(--header-h) + clamp(56px, 9vw, 120px)) clamp(48px, 7vw, 96px);
+    padding-block: calc(var(--header-h) + clamp(48px, 8vw, 104px)) 0;
     background:
       radial-gradient(900px 520px at 85% 0%, rgba(45, 86, 196, 0.5), transparent 62%),
       var(--night);
-    border-bottom: 1px solid var(--line);
   }
-  .page-hero.arena {
-    background:
-      linear-gradient(115deg, var(--arena) 0 55%, #0d1834 55.1% 100%);
-  }
-  .page-hero .wrap { position: relative; display: grid; gap: 22px; justify-items: start; }
-  .ph-ring {
-    position: absolute;
-    width: min(620px, 80vw);
-    right: max(-120px, -10vw);
-    top: 50%;
-    transform: translateY(-46%);
-    color: var(--silver);
-    opacity: 0.18;
-    animation: spin 160s linear infinite;
-  }
+  .page-hero.arena { background: radial-gradient(800px 460px at 90% 0%, rgba(45, 86, 196, 0.32), transparent 62%), var(--arena); }
+  .page-hero .wrap { position: relative; display: grid; gap: 20px; justify-items: start; padding-bottom: clamp(44px, 6vw, 80px); }
+  .page-hero :global(.ph-ornament) { opacity: 0.85; }
   .lead { max-width: 40ch; }
   .arena-title {
     font: 800 clamp(56px, 10vw, 136px)/0.86 var(--f-sport);
@@ -67,5 +56,4 @@ const { eyebrow, title, lead, crumbs = [], arena = false } = Astro.props;
   .crumbs a { color: var(--mist); text-decoration: none; }
   .crumbs a:hover { color: var(--gold-hi); }
   .crumbs [aria-current] { color: var(--ivory); }
-  @keyframes spin { to { transform: translateY(-46%) rotate(360deg); } }
 </style>

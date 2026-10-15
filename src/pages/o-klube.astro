@@ -2,8 +2,7 @@
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import Soon from '../components/Soon.astro';
-import Horseman from '../components/Horseman.astro';
-import StarRing from '../components/StarRing.astro';
+import Emblem from '../components/Emblem.astro';
 import { club, disciplines } from '../data/site';
 ---
 
@@ -18,11 +17,10 @@ import { club, disciplines } from '../data/site';
   <section class="section">
     <div class="wrap name-grid">
       <div class="name-emblem" data-reveal>
-        <StarRing count={12} size={3.4} class="ne-ring" />
-        <Horseman class="ne-horse" />
+        <Emblem label="Флаг клуба: Пересвет на коне в кольце звёзд" />
       </div>
       <div class="prose">
-        <span class="eyebrow" data-reveal>Имя клуба</span>
+        <span class="eyebrow" data-reveal>имя клуба</span>
         <h2 class="h2" data-reveal>Почему «Пересвет»</h2>
         <p class="lead" data-reveal>Александр Пересвет — инок Троице-Сергиева монастыря, богатырь, который по преданию вышел на поединок с Челубеем перед Куликовской битвой в 1380 году.</p>
         <p data-reveal>Его образ — на флаге клуба: всадник с копьём и щитом на синем полотне в кольце звёзд. Для нас это напоминание, что сила нужна, чтобы защищать, а мастерство начинается с дисциплины и уважения к сопернику.</p>
@@ -33,7 +31,6 @@ import { club, disciplines } from '../data/site';
   <section class="section section-banner">
     <div class="wrap">
       <div class="sec-head">
-        <span class="eyebrow" data-reveal>Направления</span>
         <h2 class="h2" data-reveal>Чему учим</h2>
         <p class="muted" data-reveal>Принимаем мальчиков и девочек с {club.minAge} лет, подростков и взрослых.</p>
       </div>
@@ -52,7 +49,7 @@ import { club, disciplines } from '../data/site';
   <section class="section">
     <div class="wrap history">
       <div class="sec-head">
-        <span class="eyebrow" data-reveal>История</span>
+        <span class="eyebrow" data-reveal>история</span>
         <h2 class="h2" data-reveal>Как всё начиналось</h2>
       </div>
       <div data-reveal>
@@ -64,10 +61,7 @@ import { club, disciplines } from '../data/site';
 
 <style>
   .name-grid { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
-  .name-emblem { position: relative; aspect-ratio: 1; max-width: 460px; width: 100%; }
-  .name-emblem :global(.ne-ring) { position: absolute; inset: 0; color: var(--silver); animation: ne-spin 200s linear infinite; }
-  .name-emblem :global(.ne-horse) { position: absolute; left: 19%; top: 16%; width: 62%; color: var(--gold-hi); }
-  @keyframes ne-spin { to { transform: rotate(-360deg); } }
+  .name-emblem { max-width: 440px; width: 100%; }
   .prose { display: grid; gap: 20px; }
   .prose > * + * { margin-top: 0; }
   .disc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }

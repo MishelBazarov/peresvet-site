@@ -3,8 +3,8 @@
 import { getEntry, getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Soon from '../../components/Soon.astro';
-import StarRing from '../../components/StarRing.astro';
-import Horseman from '../../components/Horseman.astro';
+import Emblem from '../../components/Emblem.astro';
+import Ornament from '../../components/Ornament.astro';
 import PersonCard from '../../components/PersonCard.astro';
 
 const t = await getEntry('trenery', 'bazarov');
@@ -24,16 +24,14 @@ const sections = [
 
 <Base title="Базаров Тимур Базарович" description="Базаров Тимур Базарович — мастер спорта по рукопашному бою, тренер центра «Пересвет», депутат Совета муниципального образования Успенский район VIII созыва.">
   <header class="bz-hero">
-    <StarRing count={16} size={2.4} class="bz-ring" />
     <div class="wrap bz-grid">
       <div class="bz-portrait" data-intro>
         {t.data.photo ? <img src={t.data.photo} alt={t.data.name} /> : (
           <div class="bz-ph" aria-hidden="true">
-            <StarRing count={12} size={3.4} class="bz-ph-ring" />
-            <Horseman class="bz-ph-horse" />
+            <Emblem class="bz-ph-emblem" />
           </div>
         )}
-        <span class="bz-ph-note">{t.data.photo ? '' : 'Здесь будет парадный портрет'}</span>
+        {!t.data.photo && <span class="bz-ph-note">здесь будет парадный портрет</span>}
       </div>
       <div class="bz-copy">
         <nav class="crumbs" aria-label="Навигация по разделам" data-intro>
@@ -53,6 +51,7 @@ const sections = [
         </div>
       </div>
     </div>
+    <Ornament class="bz-orn" cell={4} />
   </header>
 
   <nav class="bz-tabs" aria-label="Разделы страницы">
@@ -62,7 +61,7 @@ const sections = [
   <section class="section" id="sport">
     <div class="wrap two">
       <div class="sec-head">
-        <span class="eyebrow" data-reveal>Спорт</span>
+        <span class="eyebrow" data-reveal>спорт</span>
         <h2 class="h2" data-reveal>Тренер «Пересвета»</h2>
       </div>
       <div class="col">
@@ -79,7 +78,7 @@ const sections = [
   <section class="section section-banner" id="deputat">
     <div class="wrap two">
       <div class="sec-head">
-        <span class="eyebrow" data-reveal>Общественная деятельность</span>
+        <span class="eyebrow" data-reveal>общественная деятельность</span>
         <h2 class="h2" data-reveal>Депутатская работа</h2>
       </div>
       <div class="col">
@@ -97,7 +96,7 @@ const sections = [
   <section class="section" id="nagrady">
     <div class="wrap two">
       <div class="sec-head">
-        <span class="eyebrow" data-reveal>Регалии</span>
+        <span class="eyebrow" data-reveal>регалии</span>
         <h2 class="h2" data-reveal>Награды и звания</h2>
       </div>
       <div class="col" data-reveal>
@@ -109,7 +108,7 @@ const sections = [
   <section class="section section-arena" id="priyom">
     <div class="wrap two">
       <div class="sec-head">
-        <span class="eyebrow" data-reveal>Для жителей</span>
+        <span class="eyebrow" data-reveal>для жителей</span>
         <h2 class="arena-h2" data-reveal>Приём граждан</h2>
       </div>
       <div class="col" data-reveal>
@@ -121,7 +120,7 @@ const sections = [
   <section class="section" id="uchenik">
     <div class="wrap">
       <div class="sec-head">
-        <span class="eyebrow" data-reveal>Ученики</span>
+        <span class="eyebrow" data-reveal>ученики</span>
         <h2 class="h2" data-reveal>Воспитанники тренера</h2>
       </div>
       {students.length > 0 ? (
@@ -141,20 +140,19 @@ const sections = [
   .bz-hero {
     position: relative;
     overflow: hidden;
-    padding-block: calc(var(--header-h) + clamp(40px, 6vw, 80px)) clamp(56px, 8vw, 110px);
+    padding-block: calc(var(--header-h) + clamp(40px, 6vw, 80px)) 0;
     background:
       radial-gradient(70% 80% at 25% 40%, rgba(45, 86, 196, 0.6), transparent 65%),
       linear-gradient(180deg, var(--night), #0a1634);
-    border-bottom: 1px solid var(--line);
   }
-  .bz-hero :global(.bz-ring) { position: absolute; width: 1100px; left: -380px; top: -200px; color: var(--silver); opacity: 0.12; }
+  .bz-hero :global(.bz-orn) { margin-top: clamp(48px, 7vw, 96px); }
   .bz-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(32px, 6vw, 96px); align-items: center; position: relative; }
   .bz-portrait { position: relative; display: grid; gap: 12px; }
   .bz-portrait img, .bz-ph { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 999px 999px 0 0; border: 1px solid var(--line); }
   .bz-ph { position: relative; background: radial-gradient(circle at 50% 38%, var(--banner-hi), var(--banner) 40%, var(--night) 100%); overflow: hidden; }
-  .bz-ph :global(.bz-ph-ring) { position: absolute; width: 90%; left: 5%; top: 14%; color: var(--silver); opacity: 0.8; }
-  .bz-ph :global(.bz-ph-horse) { position: absolute; width: 56%; left: 22%; top: 25%; color: var(--gold-hi); }
-  .bz-ph-note { font: 600 13px/1 var(--f-sport); letter-spacing: 0.2em; text-transform: uppercase; color: var(--mist); text-align: center; }
+  .bz-ph { display: grid; place-items: center; }
+  .bz-ph :global(.bz-ph-emblem) { width: 84%; margin-top: 10%; }
+  .bz-ph-note { font: 500 24px/1 var(--f-hand); color: var(--mist); text-align: center; transform: rotate(-2deg); }
   .bz-copy { display: grid; gap: 28px; justify-items: start; }
   .crumbs { display: flex; flex-wrap: wrap; gap: 10px; font: 600 15px/1 var(--f-sport); letter-spacing: 0.14em; text-transform: uppercase; color: var(--mist); }
   .crumbs a { color: var(--mist); text-decoration: none; }

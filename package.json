@@ -11,6 +11,7 @@
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",
     "@fontsource/alumni-sans": "5.3.0",
+    "@fontsource/caveat": "5.3.0",
     "@fontsource/cormorant": "5.3.0",
     "@fontsource/golos-text": "5.3.0",
     "astro": "7.4.0",

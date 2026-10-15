@@ -2,7 +2,6 @@
 import { getCollection, getEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Soon from '../../components/Soon.astro';
-import StarRing from '../../components/StarRing.astro';
 
 export async function getStaticPaths() {
   const boytsy = await getCollection('boytsy');
@@ -16,7 +15,6 @@ const initials = b.data.name.split(' ').slice(0, 2).map((p: string) => p[0]).joi
 
 <Base title={b.data.name} description={`${b.data.name} — боец центра «Пересвет», Армавир. Звания и победы.`}>
   <header class="f-hero">
-    <StarRing count={16} size={2.4} class="f-ring" />
     <div class="wrap f-grid">
       <div class="f-copy">
         <nav class="crumbs" aria-label="Навигация по разделам" data-intro>
@@ -43,7 +41,7 @@ const initials = b.data.name.split(' ').slice(0, 2).map((p: string) => p[0]).joi
   <section class="section section-arena">
     <div class="wrap f-body">
       <div class="sec-head">
-        <span class="eyebrow" data-reveal>История выступлений</span>
+        <span class="eyebrow" data-reveal>история выступлений</span>
         <h2 class="arena-h2" data-reveal>Победы</h2>
       </div>
       {b.data.achievements.length > 0 ? (
@@ -57,7 +55,6 @@ const initials = b.data.name.split(' ').slice(0, 2).map((p: string) => p[0]).joi
 
 <style>
   .f-hero { position: relative; overflow: hidden; padding-block: calc(var(--header-h) + clamp(40px, 6vw, 80px)) 0; background: linear-gradient(115deg, var(--arena) 0 58%, #0d1834 58.1%); border-bottom: 1px solid var(--line); }
-  .f-hero :global(.f-ring) { position: absolute; width: 900px; right: -260px; top: -160px; color: var(--gold); opacity: 0.08; }
   .f-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: clamp(24px, 4vw, 64px); align-items: end; position: relative; }
   .f-copy { display: grid; gap: 24px; justify-items: start; padding-bottom: clamp(48px, 6vw, 80px); }
   .crumbs { display: flex; flex-wrap: wrap; gap: 10px; font: 600 15px/1 var(--f-sport); letter-spacing: 0.14em; text-transform: uppercase; color: var(--mist); }

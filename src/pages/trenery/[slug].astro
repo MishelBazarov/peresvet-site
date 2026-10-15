@@ -3,7 +3,6 @@ import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import PageHero from '../../components/PageHero.astro';
 import Soon from '../../components/Soon.astro';
-import StarRing from '../../components/StarRing.astro';
 
 export async function getStaticPaths() {
   // У Т. Б. Базарова своя расширенная страница — trenery/bazarov.astro
@@ -21,7 +20,7 @@ const initials = t.data.name.split(' ').slice(0, 2).map((p: string) => p[0]).joi
     <div class="wrap coach">
       <div class="c-photo" data-reveal>
         {t.data.photo ? <img src={t.data.photo} alt={t.data.name} /> : (
-          <div class="c-ph" aria-hidden="true"><StarRing count={12} size={3.6} class="c-ring" /><span>{initials}</span></div>
+          <div class="c-ph" aria-hidden="true"><span>{initials}</span><em>фото скоро</em></div>
         )}
       </div>
       <div class="c-body">
@@ -44,9 +43,9 @@ const initials = t.data.name.split(' ').slice(0, 2).map((p: string) => p[0]).joi
   .coach { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
   .c-photo { aspect-ratio: 4 / 5; border: 1px solid var(--line-soft); overflow: hidden; position: sticky; top: calc(var(--header-h) + 24px); }
   .c-photo img { width: 100%; height: 100%; object-fit: cover; }
-  .c-ph { width: 100%; height: 100%; display: grid; place-items: center; position: relative; background: radial-gradient(circle at 50% 40%, rgba(45, 86, 196, 0.55), transparent 65%), linear-gradient(180deg, var(--night-3), var(--night)); }
-  .c-ph :global(.c-ring) { position: absolute; width: 80%; color: var(--silver); opacity: 0.4; }
-  .c-ph span { font: 600 120px/1 var(--f-display); color: var(--gold); }
+  .c-ph { width: 100%; height: 100%; display: grid; place-items: center; position: relative; background: linear-gradient(170deg, var(--night-3), var(--night) 75%); }
+  .c-ph span { font: 500 italic 130px/1 var(--f-display); color: rgba(232, 205, 140, 0.6); }
+  .c-ph em { position: absolute; right: 20px; top: 18px; font: 500 24px/1 var(--f-hand); font-style: normal; color: var(--mist); transform: rotate(-4deg); }
   .c-body { display: grid; gap: 32px; justify-items: start; }
   .c-regalia { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; width: 100%; }
   .c-regalia li { font: 800 clamp(26px, 2.8vw, 36px)/1 var(--f-sport); text-transform: uppercase; padding-block: 18px; border-top: 1px solid var(--line-soft); color: var(--gold-hi); }

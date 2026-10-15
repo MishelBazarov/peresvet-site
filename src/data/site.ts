@@ -37,13 +37,15 @@ export const halls: Hall[] = [
     gis: 'https://2gis.ru/armawir/firm/70000001007038867',
     isNew: true,
   },
-  {
-    id: 'dom-oficerov',
-    name: 'Дом офицеров',
-    address: 'ул. Советской Армии, 210А',
-    yandex: 'https://yandex.ru/maps/?text=' + encodeURIComponent('Армавир, улица Советской Армии, 210А'),
-  },
 ];
+
+// 1 зал, 2 зала, 5 залов
+export function plural(n: number, one: string, few: string, many: string) {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+  return many;
+}
 
 export const disciplines = [
   {
@@ -84,7 +86,7 @@ export const nav = [
   { href: '/boytsy/', label: 'Бойцы' },
   { href: '/novosti/', label: 'Новости' },
   { href: '/blog/', label: 'Блог' },
-  { href: '/zaly/', label: 'Залы' },
+  { href: '/zaly/', label: halls.length > 1 ? 'Залы' : 'Зал' },
 ];
 
 // Где не показываем всплывающую форму

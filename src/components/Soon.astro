@@ -4,10 +4,10 @@ interface Props {
   title?: string;
   text: string;
 }
-const { title = 'Готовим материал', text } = Astro.props;
+const { title = 'скоро здесь', text } = Astro.props;
 ---
 
 <div class="soon">
-  <span class="sport">{title}</span>
+  <span class="soon-title">{title}</span>
   <p>{text}</p>
 </div>

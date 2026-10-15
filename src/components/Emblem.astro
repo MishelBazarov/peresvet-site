@@ -1,0 +1,51 @@
+---
+// Герб клуба: кольцо серебряных звёзд и Пересвет на коне внутри.
+// Всадник рассчитан так, чтобы копьё и копыта не заходили на звёзды:
+// берём наименьший круг, в который вписан контур фигуры, и вписываем его внутрь кольца.
+interface Props {
+  class?: string;
+  stars?: number;
+  starSize?: number; // полуразмер звезды в единицах 100×100
+  ringR?: number; // радиус кольца звёзд
+  gap?: number; // зазор между звёздами и фигурой
+  label?: string;
+}
+const { class: cls = '', stars = 12, starSize = 3.2, ringR = 44, gap = 3, label } = Astro.props;
+
+// public/brand/horseman.svg: viewBox и описанный круг фигуры (посчитаны по контурам файла)
+const VB = { x: 26, y: 23, w: 1462, h: 1605 };
+const MEC = { cx: 741.5, cy: 813.6, r: 1056.2 };
+
+const k = (ringR - starSize - gap) / MEC.r;
+const fig = {
+  w: VB.w * k,
+  h: VB.h * k,
+  x: 50 - (MEC.cx - VB.x) * k,
+  y: 50 - (MEC.cy - VB.y) * k,
+};
+const star = 'M0 -1Q.13 -.13 1 0Q.13 .13 0 1Q-.13 .13 -1 0Q-.13 -.13 0 -1Z';
+const points = Array.from({ length: stars }, (_, i) => {
+  const a = (i / stars) * Math.PI * 2 - Math.PI / 2;
+  return { x: 50 + ringR * Math.cos(a), y: 50 + ringR * Math.sin(a) };
+});
+---
+
+<svg
+  class:list={['emblem', cls]}
+  viewBox="0 0 100 100"
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+>
+  <g class="emblem-stars">
+    {points.map((p) => (
+      <path d={star} transform={`translate(${p.x.toFixed(2)} ${p.y.toFixed(2)}) rotate(45) scale(${starSize})`} />
+    ))}
+  </g>
+  <image href="/brand/horseman.svg" x={fig.x.toFixed(2)} y={fig.y.toFixed(2)} width={fig.w.toFixed(2)} height={fig.h.toFixed(2)} />
+</svg>
+
+<style>
+  .emblem { display: block; width: 100%; height: auto; overflow: visible; color: var(--silver); }
+  .emblem-stars { fill: currentColor; }
+</style>

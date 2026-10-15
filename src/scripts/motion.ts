@@ -93,21 +93,17 @@ if (!reduce) {
     });
   });
 
-  // Бегущая строка: ускоряется от прокрутки и меняет направление
-  document.querySelectorAll<HTMLElement>('[data-marquee]').forEach((track) => {
-    const tween = gsap.to(track, { xPercent: -50, ease: 'none', duration: 36, repeat: -1 });
-    ScrollTrigger.create({
-      trigger: document.body,
-      start: 0,
-      end: 'max',
-      onUpdate: (self) => {
-        const speed = 1 + Math.min(Math.abs(self.getVelocity()) / 260, 5);
-        gsap.killTweensOf(tween, 'timeScale');
-        gsap.to(tween, { timeScale: self.direction * speed, duration: 0.2 });
-        gsap.to(tween, { timeScale: self.direction, duration: 1.4, delay: 0.25 });
-      },
-    });
-  });
+  // Линии «от руки» прорисовываются, когда видны
+  const drawIO = new IntersectionObserver(
+    (entries) => entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const el = e.target as HTMLElement;
+      setTimeout(() => el.classList.add('drawn'), 350);
+      drawIO.unobserve(el);
+    }),
+    { rootMargin: '0px 0px -12% 0px' },
+  );
+  document.querySelectorAll('[data-draw]').forEach((el) => drawIO.observe(el));
 
   // Линия-индикатор прогресса чтения статьи
   const progress = document.querySelector<HTMLElement>('[data-progress]');

@@ -1,15 +1,13 @@
 ---
-// Пересвет на коне — силуэт с флага клуба. Цвет задаётся через color (currentColor).
-import svg from '../assets/horseman.svg?raw';
+// Пересвет на коне — фигура с флага клуба (без кольца звёзд)
 interface Props {
   class?: string;
 }
 const { class: cls = '' } = Astro.props;
 ---
 
-<span class:list={['horseman', cls]} set:html={svg} />
+<img class:list={['horseman', cls]} src="/brand/horseman.svg" alt="" width="1462" height="1605" decoding="async" />
 
 <style>
-  .horseman { display: block; color: var(--gold); }
-  .horseman :global(svg) { width: 100%; height: auto; overflow: visible; }
+  .horseman { display: block; width: 100%; height: auto; }
 </style>
