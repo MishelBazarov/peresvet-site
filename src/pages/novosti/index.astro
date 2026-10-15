@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import NewsCard from '../../components/NewsCard.astro';
+
+const novosti = (await getCollection('novosti')).sort((a, b) => +b.data.date - +a.data.date);
+const filters = [
+  { id: 'all', label: 'Все' },
+  { id: 'turnir', label: 'Анонсы турниров' },
+  { id: 'rezultaty', label: 'Результаты' },
+  { id: 'sobytie', label: 'События клуба' },
+];
+---
+
+<Base title="Новости и соревнования" description="Новости центра «Пересвет»: анонсы турниров, результаты соревнований по рукопашному и универсальному бою, события клуба.">
+  <PageHero eyebrow="Новости и соревнования" title="Новости" lead="Анонсы турниров, медали наших спортсменов и жизнь клуба." crumbs={[{ label: 'Новости' }]} arena />
+  <section class="section section-arena">
+    <div class="wrap">
+      <div class="filters" role="group" aria-label="Тип новостей">
+        {filters.map((f, i) => (
+          <button type="button" class="filter" data-filter={f.id} aria-pressed={i === 0 ? 'true' : 'false'}>{f.label}</button>
+        ))}
+      </div>
+      <div class="list" data-news-list>
+        {novosti.map((n) => (
+          <NewsCard href={`/novosti/${n.id}/`} title={n.data.title} date={n.data.date} type={n.data.type} summary={n.data.summary} place={n.data.place} example={n.data.example} />
+        ))}
+      </div>
+      <p class="empty muted" hidden data-news-empty>В этом разделе пока нет записей.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+  .filter { font: 700 15px/1 var(--f-sport); letter-spacing: 0.16em; text-transform: uppercase; padding: 13px 18px 12px; border: 1px solid var(--line-soft); background: transparent; color: var(--mist); cursor: pointer; transition: color 0.25s, border-color 0.25s, background-color 0.25s; }
+  .filter:hover { color: var(--ivory); border-color: var(--line); }
+  .filter[aria-pressed='true'] { background: var(--gold); border-color: var(--gold); color: var(--arena); }
+  .list > :global([hidden]) { display: none !important; }
+  .empty { padding-block: 32px; border-top: 1px solid var(--line-soft); }
+</style>

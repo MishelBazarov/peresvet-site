@@ -1,0 +1,83 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Soon from '../../components/Soon.astro';
+import StarRing from '../../components/StarRing.astro';
+
+export async function getStaticPaths() {
+  const boytsy = await getCollection('boytsy');
+  return boytsy.map((b) => ({ params: { slug: b.id }, props: { b } }));
+}
+const { b } = Astro.props;
+const coach = b.data.coach ? await getEntry('trenery', b.data.coach) : undefined;
+const [last, ...rest] = b.data.name.split(' ');
+const initials = b.data.name.split(' ').slice(0, 2).map((p: string) => p[0]).join('');
+---
+
+<Base title={b.data.name} description={`${b.data.name} — боец центра «Пересвет», Армавир. Звания и победы.`}>
+  <header class="f-hero">
+    <StarRing count={16} size={2.4} class="f-ring" />
+    <div class="wrap f-grid">
+      <div class="f-copy">
+        <nav class="crumbs" aria-label="Навигация по разделам" data-intro>
+          <a href="/">Главная</a><span aria-hidden="true">/</span><a href="/boytsy/">Бойцы</a><span aria-hidden="true">/</span><span aria-current="page">{last}</span>
+        </nav>
+        <div class="f-tags" data-intro>
+          {b.data.rank && <span class="chip">{b.data.rank}</span>}
+          {b.data.weight && <span class="chip">{b.data.weight}</span>}
+        </div>
+        <h1 class="f-name" data-intro><span>{last}</span>{rest.join(' ')}</h1>
+        <dl class="f-stats" data-intro>
+          <div><dt>{b.data.achievements.length || '—'}</dt><dd>главных побед</dd></div>
+          <div><dt>{b.data.rank ? b.data.rank.split(' ')[0] : '—'}</dt><dd>звание / разряд</dd></div>
+          <div><dt>{b.data.weight ?? '—'}</dt><dd>весовая категория</dd></div>
+        </dl>
+        {coach && <p class="muted" data-intro>Тренер: <a href={`/trenery/${coach.id}/`}>{coach.data.name}</a></p>}
+      </div>
+      <div class="f-photo" data-intro>
+        {b.data.photo ? <img src={b.data.photo} alt={b.data.name} /> : <div class="f-ph" aria-hidden="true"><span>{initials}</span></div>}
+      </div>
+    </div>
+  </header>
+
+  <section class="section section-arena">
+    <div class="wrap f-body">
+      <div class="sec-head">
+        <span class="eyebrow" data-reveal>История выступлений</span>
+        <h2 class="arena-h2" data-reveal>Победы</h2>
+      </div>
+      {b.data.achievements.length > 0 ? (
+        <ul class="wins">{b.data.achievements.map((a: string) => <li data-reveal>{a}</li>)}</ul>
+      ) : (
+        <div data-reveal><Soon text="Турниры, места, весовые категории и даты. Как карточка бойца на сайте UFC: крупные цифры и полная история выступлений." /></div>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .f-hero { position: relative; overflow: hidden; padding-block: calc(var(--header-h) + clamp(40px, 6vw, 80px)) 0; background: linear-gradient(115deg, var(--arena) 0 58%, #0d1834 58.1%); border-bottom: 1px solid var(--line); }
+  .f-hero :global(.f-ring) { position: absolute; width: 900px; right: -260px; top: -160px; color: var(--gold); opacity: 0.08; }
+  .f-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: clamp(24px, 4vw, 64px); align-items: end; position: relative; }
+  .f-copy { display: grid; gap: 24px; justify-items: start; padding-bottom: clamp(48px, 6vw, 80px); }
+  .crumbs { display: flex; flex-wrap: wrap; gap: 10px; font: 600 15px/1 var(--f-sport); letter-spacing: 0.14em; text-transform: uppercase; color: var(--mist); }
+  .crumbs a { color: var(--mist); text-decoration: none; }
+  .crumbs [aria-current] { color: var(--ivory); }
+  .f-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .f-name { display: grid; font: 800 clamp(56px, 9vw, 128px)/0.86 var(--f-sport); text-transform: uppercase; }
+  .f-name span { color: var(--gold-hi); }
+  .f-stats { margin: 0; display: grid; grid-template-columns: repeat(3, auto); gap: clamp(20px, 4vw, 56px); }
+  .f-stats > div { border-top: 2px solid var(--gold); padding-top: 12px; }
+  .f-stats dt { font: 800 clamp(40px, 5vw, 64px)/0.9 var(--f-sport); }
+  .f-stats dd { margin: 6px 0 0; font: 700 13px/1 var(--f-sport); letter-spacing: 0.18em; text-transform: uppercase; color: var(--mist); }
+  .f-photo { aspect-ratio: 4 / 5; align-self: end; }
+  .f-photo img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .f-ph { width: 100%; height: 100%; display: grid; place-items: center; background: radial-gradient(circle at 50% 40%, rgba(201, 165, 92, 0.2), transparent 60%); border: 1px solid var(--line-soft); border-bottom: 0; }
+  .f-ph span { font: 800 140px/1 var(--f-sport); color: rgba(201, 165, 92, 0.5); }
+  .arena-h2 { font: 800 clamp(44px, 6vw, 84px)/0.9 var(--f-sport); text-transform: uppercase; }
+  .f-body { max-width: 980px; }
+  .wins { list-style: none; margin: 0; padding: 0; }
+  .wins li { font: 800 clamp(26px, 3vw, 38px)/1.05 var(--f-sport); text-transform: uppercase; padding-block: 20px; border-top: 1px solid var(--line-soft); }
+  @media (max-width: 860px) { .f-grid { grid-template-columns: 1fr; } .f-photo { max-width: 360px; } .f-copy { padding-bottom: 24px; } }
+  @media (max-width: 480px) { .f-stats { grid-template-columns: repeat(2, auto); } }
+</style>

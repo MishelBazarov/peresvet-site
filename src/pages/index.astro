@@ -1,0 +1,358 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import StarRing from '../components/StarRing.astro';
+import Horseman from '../components/Horseman.astro';
+import PersonCard from '../components/PersonCard.astro';
+import NewsCard from '../components/NewsCard.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { club, halls, disciplines } from '../data/site';
+
+const trenery = (await getCollection('trenery')).sort((a, b) => a.data.order - b.data.order);
+const boytsy = (await getCollection('boytsy')).sort((a, b) => a.data.order - b.data.order).slice(0, 3);
+const novosti = (await getCollection('novosti')).sort((a, b) => +b.data.date - +a.data.date).slice(0, 3);
+const masters = trenery.filter((t) => t.data.regalia.some((r) => /^мастер спорта/i.test(r))).length;
+
+const marquee = disciplines.map((d) => d.title);
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'SportsClub',
+  name: club.fullName,
+  sport: ['Рукопашный бой', 'Универсальный бой'],
+  telephone: club.phone,
+  address: halls.map((h) => ({
+    '@type': 'PostalAddress',
+    streetAddress: h.address,
+    addressLocality: club.city,
+    addressRegion: club.region,
+    addressCountry: 'RU',
+  })),
+  sameAs: club.socials.map((s) => s.url),
+};
+---
+
+<Base
+  title="Главная"
+  description="Центр традиционных боевых искусств «Пересвет» в Армавире: рукопашный бой, универсальный бой, русский рукопашный бой. Набор мальчиков и девочек с 5 лет."
+  home
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(schema)} />
+
+  <!-- ПЕРВЫЙ ЭКРАН · «Знамя» -->
+  <section class="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow" data-intro>Центр традиционных боевых искусств</span>
+        <h1 class="hero-title gold-text" data-split>Пересвет</h1>
+        <p class="lead hero-lead" data-intro>Рукопашный и универсальный бой в Армавире. Набор мальчиков и девочек с {club.minAge} лет.</p>
+        <div class="hero-actions" data-intro>
+          <button type="button" class="btn btn-gold" data-open-lead>Записаться на тренировку</button>
+          <a class="btn btn-ghost" href={club.phoneHref}>{club.phone}</a>
+        </div>
+      </div>
+      <div class="hero-emblem" data-intro>
+        <div class="he-inner" data-parallax="-0.14">
+          <StarRing count={12} size={3.2} class="he-ring" />
+          <div class="he-glow"></div>
+          <Horseman class="he-horse" />
+        </div>
+      </div>
+    </div>
+    <div class="wrap hero-foot" data-intro>
+      <div><span class="hf-label">Направления</span><span>Рукопашный бой · Универсальный бой · РРБ</span></div>
+      <div><span class="hf-label">Залы</span><span>{halls.map((h) => h.address.split(',').slice(0, 2).join(',')).join(' · ')}</span></div>
+      <a href="#klub" class="hf-scroll" aria-label="Листать вниз"><span></span></a>
+    </div>
+  </section>
+
+  <!-- БЕГУЩАЯ СТРОКА · «Арена» -->
+  <div class="marquee" aria-hidden="true">
+    <div class="mq-track" data-marquee>
+      {[0, 1].map(() => (
+        <div class="mq-group">
+          {marquee.map((t) => (
+            <>
+              <span class="mq-item">{t}</span>
+              <svg class="mq-star" viewBox="-1 -1 2 2"><path d="M0 -1Q.13 -.13 1 0Q.13 .13 0 1Q-.13 .13 -1 0Q-.13 -.13 0 -1Z" transform="rotate(45)" fill="currentColor" /></svg>
+            </>
+          ))}
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- О КЛУБЕ -->
+  <section class="section about" id="klub">
+    <div class="wrap about-grid">
+      <div class="about-text">
+        <span class="eyebrow" data-reveal>О клубе</span>
+        <h2 class="h2" data-reveal>Спорт и традиция русского воинского искусства</h2>
+        <p class="lead" data-reveal>Клуб носит имя Пересвета — инока-богатыря, вышедшего на поединок перед Куликовской битвой.</p>
+        <p class="muted" data-reveal>Мы готовим спортсменов по рукопашному и универсальному бою и сохраняем традиции: историю воинского искусства России, строевую подготовку, оздоровительную гимнастику «Здрава», боевую акробатику.</p>
+        <a href="/o-klube/" class="link-arrow" data-reveal>О клубе подробнее <span>→</span></a>
+      </div>
+      <dl class="facts">
+        <div data-reveal><dt class="sport">{club.minAge}+</dt><dd>лет — возраст, с которого принимаем детей</dd></div>
+        <div data-reveal><dt class="sport">{halls.length}</dt><dd>{halls.length === 2 ? 'зала' : 'залов'} в Армавире</dd></div>
+        <div data-reveal><dt class="sport">{masters}</dt><dd>мастера спорта в тренерском составе</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- НАПРАВЛЕНИЯ -->
+  <section class="section disciplines section-banner">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow" data-reveal>Направления</span>
+        <h2 class="h2" data-reveal>Чем занимаемся</h2>
+      </div>
+      <ul class="disc-list">
+        {disciplines.map((d) => (
+          <li class="disc" data-reveal>
+            <h3 class="disc-title">{d.title}</h3>
+            <span class="chip">{d.tag}</span>
+            <p class="disc-text">{d.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ТРЕНЕРЫ -->
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head-row">
+        <div class="sec-head">
+          <span class="eyebrow" data-reveal>Тренеры</span>
+          <h2 class="h2" data-reveal>Кто ведёт тренировки</h2>
+        </div>
+        <a href="/trenery/" class="link-arrow" data-reveal>Все тренеры <span>→</span></a>
+      </div>
+      <div class="coaches">
+        {trenery.map((t) => (
+          <PersonCard href={`/trenery/${t.id}/`} name={t.data.name} role={t.data.role} regalia={t.data.regalia} photo={t.data.photo} large={t.data.featured} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- НОВОСТИ И СОРЕВНОВАНИЯ · «Арена» -->
+  <section class="section section-arena">
+    <div class="wrap">
+      <div class="sec-head-row">
+        <div class="sec-head">
+          <span class="eyebrow" data-reveal>Новости и соревнования</span>
+          <h2 class="arena-h2" data-reveal>Турниры. Медали. Жизнь клуба</h2>
+        </div>
+        <a href="/novosti/" class="link-arrow" data-reveal>Все новости <span>→</span></a>
+      </div>
+      <div class="news-list">
+        {novosti.map((n) => (
+          <NewsCard href={`/novosti/${n.id}/`} title={n.data.title} date={n.data.date} type={n.data.type} summary={n.data.summary} place={n.data.place} example={n.data.example} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ЗАЛ СЛАВЫ · «Арена» -->
+  <section class="section section-arena hall-of-fame">
+    <StarRing count={16} size={2.6} class="hof-ring" />
+    <div class="wrap">
+      <div class="sec-head-row">
+        <div class="sec-head">
+          <span class="eyebrow" data-reveal>Зал славы</span>
+          <h2 class="arena-h2" data-reveal>Лучшие бойцы клуба</h2>
+        </div>
+        <a href="/boytsy/" class="link-arrow" data-reveal>Все бойцы <span>→</span></a>
+      </div>
+      <div class="fighters">
+        {boytsy.map((b) => (
+          <PersonCard href={`/boytsy/${b.id}/`} name={b.data.name} role={b.data.rank ?? 'Звание и победы уточняются'} regalia={b.data.achievements} photo={b.data.photo} arena />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ЗАЛЫ -->
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head-row">
+        <div class="sec-head">
+          <span class="eyebrow" data-reveal>Где заниматься</span>
+          <h2 class="h2" data-reveal>Залы в Армавире</h2>
+        </div>
+        <a href="/zaly/" class="link-arrow" data-reveal>Залы и расписание <span>→</span></a>
+      </div>
+      <div class="halls">
+        {halls.map((h) => (
+          <article class="hall card" data-reveal>
+            <div class="hall-top">
+              <span class="sport hall-city">Армавир</span>
+              {h.isNew && <span class="chip chip-new">Новый адрес</span>}
+            </div>
+            <h3 class="h3">{h.name}</h3>
+            <p class="hall-addr">{h.address}</p>
+            {h.note && <p class="muted">{h.note}</p>}
+            <div class="hall-links">
+              <a href={h.yandex} target="_blank" rel="noopener" class="link-arrow">Яндекс Карты <span>↗</span></a>
+              {h.gis && <a href={h.gis} target="_blank" rel="noopener" class="link-arrow">2ГИС <span>↗</span></a>}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ЗАПИСЬ -->
+  <section class="section section-banner signup" id="zapis">
+    <div class="wrap signup-grid">
+      <div class="signup-copy">
+        <span class="eyebrow" data-reveal>Запись</span>
+        <h2 class="h2" data-reveal>Первая тренировка — знакомство</h2>
+        <ol class="steps">
+          <li data-reveal><b>Заявка</b><span>Оставьте телефон в форме или позвоните сами.</span></li>
+          <li data-reveal><b>Звонок тренера</b><span>Ответим на вопросы и подберём группу по возрасту.</span></li>
+          <li data-reveal><b>Тренировка</b><span>Приходите в спортивной одежде. Что взять с собой, <a href="/blog/pervaya-trenirovka/">рассказали в блоге</a>.</span></li>
+        </ol>
+      </div>
+      <div class="signup-form card" data-reveal>
+        <LeadForm id="home" />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---------- первый экран ---------- */
+  .hero {
+    position: relative;
+    min-height: min(100svh, 1000px);
+    display: grid;
+    grid-template-rows: 1fr auto;
+    padding-top: var(--header-h);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(60% 70% at 72% 45%, rgba(45, 86, 196, 0.75) 0%, rgba(28, 63, 158, 0.45) 35%, transparent 70%),
+      radial-gradient(50% 60% at 0% 100%, rgba(28, 63, 158, 0.45), transparent 70%),
+      linear-gradient(180deg, var(--night) 0%, #0a1634 100%);
+  }
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 30%;
+    background: linear-gradient(180deg, transparent, var(--night));
+  }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; align-items: center; gap: clamp(24px, 4vw, 64px); padding-block: clamp(32px, 6vw, 72px); }
+  .hero-copy { display: grid; gap: 26px; justify-items: start; position: relative; z-index: 2; }
+  .hero-title {
+    font: 600 clamp(56px, 8.4vw, 156px)/0.84 var(--f-display);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    margin-left: -0.04em;
+    white-space: nowrap;
+  }
+  .hero-lead { max-width: 30ch; }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero-emblem { position: relative; width: 100%; max-width: 600px; justify-self: center; aspect-ratio: 1; }
+  .he-inner { position: absolute; inset: 0; }
+  .hero-emblem :global(.he-ring) { position: absolute; inset: 0; width: 100%; color: var(--silver); filter: drop-shadow(0 0 12px rgba(201, 209, 227, 0.35)); animation: ring-spin 180s linear infinite; }
+  .he-glow { position: absolute; inset: 18%; border-radius: 50%; background: radial-gradient(circle, rgba(232, 205, 140, 0.22), transparent 65%); filter: blur(10px); }
+  .hero-emblem :global(.he-horse) { position: absolute; left: 18%; top: 15%; width: 64%; color: var(--gold-hi); filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.45)); }
+  @keyframes ring-spin { to { transform: rotate(360deg); } }
+
+  .hero-foot { display: flex; align-items: center; gap: clamp(20px, 4vw, 56px); padding-block: 22px 32px; border-top: 1px solid var(--line-soft); }
+  .hero-foot > div { display: grid; gap: 6px; font-size: 15px; color: var(--ivory); }
+  .hf-label { font: 700 13px/1 var(--f-sport); letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); }
+  .hf-scroll { margin-left: auto; width: 30px; height: 50px; border: 1px solid var(--line); border-radius: 16px; position: relative; flex-shrink: 0; }
+  .hf-scroll span { position: absolute; left: 50%; top: 10px; width: 3px; height: 9px; margin-left: -1.5px; border-radius: 2px; background: var(--gold); animation: scroll-cue 2s var(--ease) infinite; }
+  @keyframes scroll-cue { 0% { opacity: 0; transform: translateY(-4px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(16px); } }
+
+  /* ---------- бегущая строка ---------- */
+  .marquee { overflow: hidden; background: var(--arena); border-block: 1px solid var(--line-soft); padding-block: clamp(18px, 2.4vw, 30px); }
+  .mq-track { display: flex; width: max-content; }
+  .mq-group { display: flex; align-items: center; flex-shrink: 0; }
+  .mq-item { font: 800 clamp(44px, 7vw, 104px)/0.9 var(--f-sport); text-transform: uppercase; color: transparent; -webkit-text-stroke: 1px rgba(238, 231, 215, 0.55); white-space: nowrap; padding-inline: 0.35em; }
+  .mq-item:nth-child(4n + 1) { color: var(--ivory); -webkit-text-stroke: 0; }
+  .mq-star { width: clamp(20px, 2.4vw, 34px); height: clamp(20px, 2.4vw, 34px); color: var(--gold); flex-shrink: 0; }
+
+  /* ---------- о клубе ---------- */
+  .about-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: clamp(40px, 7vw, 120px); align-items: end; }
+  .about-text { display: grid; gap: 24px; justify-items: start; max-width: 680px; }
+  .facts { margin: 0; display: grid; gap: 0; }
+  .facts > div { display: grid; grid-template-columns: 120px 1fr; align-items: baseline; gap: 20px; padding-block: 22px; border-top: 1px solid var(--line-soft); }
+  .facts dt { font-size: clamp(56px, 6vw, 80px); line-height: 0.85; font-weight: 800; color: var(--gold-hi); }
+  .facts dd { margin: 0; color: var(--mist); }
+
+  /* ---------- направления ---------- */
+  .disc-list { list-style: none; margin: 0; padding: 0; }
+  .disc {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) 120px minmax(0, 1fr);
+    gap: clamp(16px, 3vw, 40px);
+    align-items: center;
+    padding-block: clamp(22px, 3vw, 34px);
+    border-top: 1px solid var(--line-soft);
+    position: relative;
+    transition: padding 0.5s var(--ease);
+  }
+  .disc:last-child { border-bottom: 1px solid var(--line-soft); }
+  .disc::before { content: ''; position: absolute; left: 0; top: -1px; height: 1px; width: 100%; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.8s var(--ease); }
+  .disc:hover::before { transform: scaleX(1); }
+  .disc-title { font: 600 clamp(32px, 4.4vw, 60px)/1 var(--f-display); transition: color 0.4s, transform 0.6s var(--ease); }
+  .disc:hover .disc-title { color: var(--gold-hi); transform: translateX(12px); }
+  .disc .chip { justify-self: start; }
+  .disc-text { color: var(--mist); }
+
+  /* ---------- тренеры, бойцы ---------- */
+  .coaches { display: grid; grid-template-columns: 1.35fr 1fr 1fr; gap: clamp(18px, 2.4vw, 32px); align-items: start; }
+  .arena-h2 { font: 800 clamp(44px, 6.5vw, 92px)/0.9 var(--f-sport); text-transform: uppercase; }
+  .hall-of-fame { overflow: hidden; border-top: 1px solid var(--line-soft); }
+  .hall-of-fame :global(.hof-ring) { position: absolute; width: 900px; right: -300px; top: -200px; color: var(--gold); opacity: 0.07; }
+  .fighters { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 2.4vw, 32px); position: relative; }
+
+  /* ---------- залы ---------- */
+  .halls { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(18px, 2.4vw, 32px); }
+  .hall { padding: clamp(24px, 3vw, 40px); display: grid; gap: 12px; align-content: start; transition: border-color 0.4s, transform 0.6s var(--ease); }
+  .hall:hover { border-color: var(--line); transform: translateY(-4px); }
+  .hall-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .hall-city { color: var(--mist); font-weight: 700; font-size: 14px; letter-spacing: 0.2em; }
+  .hall-addr { font: 800 clamp(26px, 2.6vw, 34px)/1 var(--f-sport); text-transform: uppercase; }
+  .hall-links { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 12px; }
+
+  /* ---------- запись ---------- */
+  .signup-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
+  .signup-copy { display: grid; gap: 24px; }
+  .steps { list-style: none; margin: 12px 0 0; padding: 0; counter-reset: step; display: grid; }
+  .steps li { counter-increment: step; display: grid; grid-template-columns: 64px 1fr; gap: 4px 16px; padding-block: 18px; border-top: 1px solid var(--line-soft); }
+  .steps li::before { content: counter(step); grid-row: span 2; font: 800 48px/0.85 var(--f-sport); color: var(--gold); }
+  .steps b { font: 600 24px/1.1 var(--f-display); }
+  .steps span { color: var(--mist); font-size: 15px; }
+  .signup-form { padding: clamp(24px, 3.4vw, 44px); background: rgba(8, 17, 39, 0.75); backdrop-filter: blur(8px); }
+
+  /* ---------- адаптив ---------- */
+  @media (max-width: 980px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-title { font-size: clamp(56px, 15vw, 140px); }
+    .hero-emblem { order: -1; max-width: 360px; margin-top: 8px; }
+    .about-grid, .signup-grid { grid-template-columns: 1fr; }
+    .coaches { grid-template-columns: repeat(2, 1fr); }
+    .coaches > :global(:first-child) { grid-column: 1 / -1; }
+    .disc { grid-template-columns: 1fr auto; }
+    .disc-text { grid-column: 1 / -1; }
+  }
+  @media (max-width: 680px) {
+    .hero-emblem { max-width: 260px; }
+    .hero-foot > div:nth-child(2) { display: none; }
+    .coaches, .fighters, .halls { grid-template-columns: 1fr; }
+    .facts > div { grid-template-columns: 88px 1fr; }
+  }
+</style>

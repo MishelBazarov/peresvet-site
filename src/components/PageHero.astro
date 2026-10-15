@@ -1,0 +1,71 @@
+---
+import StarRing from './StarRing.astro';
+interface Crumb { href?: string; label: string }
+interface Props {
+  eyebrow: string;
+  title: string;
+  lead?: string;
+  crumbs?: Crumb[];
+  arena?: boolean;
+}
+const { eyebrow, title, lead, crumbs = [], arena = false } = Astro.props;
+---
+
+<header class:list={['page-hero', { arena }]}>
+  <StarRing class="ph-ring" count={16} />
+  <div class="wrap">
+    {crumbs.length > 0 && (
+      <nav class="crumbs" aria-label="Навигация по разделам" data-intro>
+        <a href="/">Главная</a>
+        {crumbs.map((c) => (
+          <>
+            <span aria-hidden="true">/</span>
+            {c.href ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}
+          </>
+        ))}
+      </nav>
+    )}
+    <span class="eyebrow" data-intro>{eyebrow}</span>
+    <h1 class:list={[arena ? 'arena-title' : 'h1 gold-text']} data-intro>{title}</h1>
+    {lead && <p class="lead" data-intro>{lead}</p>}
+    <slot />
+  </div>
+</header>
+
+<style>
+  .page-hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: calc(var(--header-h) + clamp(56px, 9vw, 120px)) clamp(48px, 7vw, 96px);
+    background:
+      radial-gradient(900px 520px at 85% 0%, rgba(45, 86, 196, 0.5), transparent 62%),
+      var(--night);
+    border-bottom: 1px solid var(--line);
+  }
+  .page-hero.arena {
+    background:
+      linear-gradient(115deg, var(--arena) 0 55%, #0d1834 55.1% 100%);
+  }
+  .page-hero .wrap { position: relative; display: grid; gap: 22px; justify-items: start; }
+  .ph-ring {
+    position: absolute;
+    width: min(620px, 80vw);
+    right: max(-120px, -10vw);
+    top: 50%;
+    transform: translateY(-46%);
+    color: var(--silver);
+    opacity: 0.18;
+    animation: spin 160s linear infinite;
+  }
+  .lead { max-width: 40ch; }
+  .arena-title {
+    font: 800 clamp(56px, 10vw, 136px)/0.86 var(--f-sport);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+  .crumbs { display: flex; flex-wrap: wrap; gap: 10px; font: 600 15px/1 var(--f-sport); letter-spacing: 0.14em; text-transform: uppercase; color: var(--mist); }
+  .crumbs a { color: var(--mist); text-decoration: none; }
+  .crumbs a:hover { color: var(--gold-hi); }
+  .crumbs [aria-current] { color: var(--ivory); }
+  @keyframes spin { to { transform: translateY(-46%) rotate(360deg); } }
+</style>

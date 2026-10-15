@@ -1,0 +1,38 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+
+const posts = (await getCollection('blog')).sort((a, b) => +b.data.date - +a.data.date);
+---
+
+<Base title="Блог" description="Блог центра «Пересвет»: статьи о рукопашном бое, тренировках детей, подготовке к соревнованиям и традициях русского воинского искусства.">
+  <PageHero eyebrow="Блог" title="Статьи" lead="О тренировках, соревнованиях и традициях. Простым языком для родителей и спортсменов." crumbs={[{ label: 'Блог' }]} />
+  <section class="section">
+    <div class="wrap posts">
+      {posts.map((p, i) => (
+        <a href={`/blog/${p.id}/`} class:list={['post', { first: i === 0 }]} data-reveal>
+          <div class="post-meta">
+            <time datetime={p.data.date.toISOString().slice(0, 10)}>{p.data.date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</time>
+            {p.data.readingMinutes && <span>{p.data.readingMinutes} мин чтения</span>}
+          </div>
+          <h2 class="post-title">{p.data.title}</h2>
+          <p class="muted">{p.data.summary}</p>
+          <span class="link-arrow">Читать <span>→</span></span>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .posts { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(18px, 2.4vw, 32px); }
+  .post { display: grid; gap: 16px; align-content: start; padding: clamp(24px, 3vw, 40px); border: 1px solid var(--line-soft); background: var(--night-2); color: var(--ivory); text-decoration: none; transition: border-color 0.4s, transform 0.6s var(--ease); }
+  .post:hover { border-color: var(--line); transform: translateY(-4px); }
+  .post.first { grid-column: 1 / -1; background: radial-gradient(700px 300px at 100% 0%, rgba(45, 86, 196, 0.45), transparent 60%), var(--night-2); }
+  .post-meta { display: flex; gap: 16px; font: 700 14px/1 var(--f-sport); letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+  .post-title { font: 600 clamp(28px, 3vw, 40px)/1.05 var(--f-display); transition: color 0.3s; }
+  .post.first .post-title { font-size: clamp(36px, 4.6vw, 60px); max-width: 20ch; }
+  .post:hover .post-title { color: var(--gold-hi); }
+  @media (max-width: 760px) { .posts { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,83 @@
+---
+import { club, halls } from '../data/site';
+interface Props {
+  id: string; // префикс для уникальных id полей
+  compact?: boolean;
+}
+const { id, compact = false } = Astro.props;
+---
+
+<form class:list={['lead-form', { compact }]} action="/api/lead.php" method="post" novalidate data-lead-form>
+  <div class="lf-fields">
+    <div class="field">
+      <label for={`${id}-name`}>Ваше имя</label>
+      <input class="input" id={`${id}-name`} name="name" type="text" autocomplete="name" required minlength="2" maxlength="80" placeholder="Как к вам обращаться" />
+    </div>
+    <div class="field">
+      <label for={`${id}-phone`}>Телефон</label>
+      <input class="input" id={`${id}-phone`} name="phone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="+7 (___) ___-__-__" data-phone />
+    </div>
+    <div class="field">
+      <label for={`${id}-age`}>Кто будет заниматься</label>
+      <select class="input" id={`${id}-age`} name="age">
+        <option value="5-7">Ребёнок 5–7 лет</option>
+        <option value="8-11">Ребёнок 8–11 лет</option>
+        <option value="12-15">Подросток 12–15 лет</option>
+        <option value="16+">Старше 16 лет / взрослый</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for={`${id}-hall`}>Удобный зал</label>
+      <select class="input" id={`${id}-hall`} name="hall">
+        {halls.map((h) => <option value={h.id}>{h.address}</option>)}
+        <option value="any">Подскажите, где удобнее</option>
+      </select>
+    </div>
+    {!compact && (
+      <div class="field lf-wide">
+        <label for={`${id}-comment`}>Комментарий</label>
+        <textarea class="input" id={`${id}-comment`} name="comment" maxlength="1000" placeholder="Например, опыт занятий или удобное время для звонка"></textarea>
+      </div>
+    )}
+    <div class="lf-hp" aria-hidden="true">
+      <label for={`${id}-website`}>Не заполняйте это поле</label>
+      <input id={`${id}-website`} name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+  </div>
+
+  <label class="check lf-consent">
+    <input type="checkbox" name="consent" id={`${id}-consent`} required />
+    <span>Даю <a href="/soglasie/" target="_blank">согласие на обработку персональных данных</a> и принимаю <a href="/politika/" target="_blank">политику обработки данных</a></span>
+  </label>
+
+  <div class="lf-actions">
+    <button type="submit" class="btn btn-gold">Отправить заявку</button>
+    <span class="lf-or">или позвоните: <a href={club.phoneHref}>{club.phone}</a></span>
+  </div>
+
+  <p class="lf-msg lf-error" role="alert" hidden data-lf-error></p>
+  <div class="lf-done" hidden data-lf-done>
+    <p class="lf-done-title">Заявка отправлена</p>
+    <p>Тренер перезвонит вам, чтобы договориться о первой тренировке. Если не хотите ждать, звоните: <a href={club.phoneHref}>{club.phone}</a>.</p>
+  </div>
+</form>
+
+<style>
+  .lead-form { display: grid; gap: 22px; }
+  .lf-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .lf-wide { grid-column: 1 / -1; }
+  .lf-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .lf-actions { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .lf-or { font-size: 15px; color: var(--mist); }
+  .lf-msg { font-size: 15px; }
+  .lf-error { color: var(--bad); }
+  .lf-done { border: 1px solid var(--gold); padding: 24px; display: grid; gap: 8px; background: rgba(201, 165, 92, 0.06); }
+  .lf-done-title { font: 600 28px/1.1 var(--f-display); color: var(--gold-hi); }
+  .lead-form.sent .lf-fields, .lead-form.sent .lf-consent, .lead-form.sent .lf-actions { display: none; }
+  .input[aria-invalid='true'] { border-color: var(--bad); }
+  button[disabled] { opacity: 0.6; cursor: progress; }
+  @media (max-width: 560px) {
+    .lf-fields { grid-template-columns: 1fr; }
+    .lf-actions .btn { width: 100%; }
+  }
+</style>

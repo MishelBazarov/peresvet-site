@@ -1,0 +1,13 @@
+---
+// Заглушка для раздела, который ещё наполняется. Честно говорит, что здесь будет.
+interface Props {
+  title?: string;
+  text: string;
+}
+const { title = 'Готовим материал', text } = Astro.props;
+---
+
+<div class="soon">
+  <span class="sport">{title}</span>
+  <p>{text}</p>
+</div>

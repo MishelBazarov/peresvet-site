@@ -1,0 +1,84 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Soon from '../components/Soon.astro';
+import Horseman from '../components/Horseman.astro';
+import StarRing from '../components/StarRing.astro';
+import { club, disciplines } from '../data/site';
+---
+
+<Base title="О клубе" description="История и направления центра традиционных боевых искусств «Пересвет» в Армавире: рукопашный бой, универсальный бой, русский рукопашный бой, гимнастика «Здрава».">
+  <PageHero
+    eyebrow="О клубе"
+    title="Пересвет"
+    lead="Центр традиционных боевых искусств. Спорт, традиция и воспитание характера."
+    crumbs={[{ label: 'О клубе' }]}
+  />
+
+  <section class="section">
+    <div class="wrap name-grid">
+      <div class="name-emblem" data-reveal>
+        <StarRing count={12} size={3.4} class="ne-ring" />
+        <Horseman class="ne-horse" />
+      </div>
+      <div class="prose">
+        <span class="eyebrow" data-reveal>Имя клуба</span>
+        <h2 class="h2" data-reveal>Почему «Пересвет»</h2>
+        <p class="lead" data-reveal>Александр Пересвет — инок Троице-Сергиева монастыря, богатырь, который по преданию вышел на поединок с Челубеем перед Куликовской битвой в 1380 году.</p>
+        <p data-reveal>Его образ — на флаге клуба: всадник с копьём и щитом на синем полотне в кольце звёзд. Для нас это напоминание, что сила нужна, чтобы защищать, а мастерство начинается с дисциплины и уважения к сопернику.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-banner">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow" data-reveal>Направления</span>
+        <h2 class="h2" data-reveal>Чему учим</h2>
+        <p class="muted" data-reveal>Принимаем мальчиков и девочек с {club.minAge} лет, подростков и взрослых.</p>
+      </div>
+      <div class="disc-grid">
+        {disciplines.map((d) => (
+          <article class="disc-card card" id={d.id} data-reveal>
+            <span class="chip">{d.tag}</span>
+            <h3 class="h3">{d.title}</h3>
+            <p class="muted">{d.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap history">
+      <div class="sec-head">
+        <span class="eyebrow" data-reveal>История</span>
+        <h2 class="h2" data-reveal>Как всё начиналось</h2>
+      </div>
+      <div data-reveal>
+        <Soon text="Год основания, первые тренировки и залы, первые победы на соревнованиях, важные даты клуба. Соберём вместе с тренерами и покажем в виде ленты событий с фотографиями." />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .name-grid { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
+  .name-emblem { position: relative; aspect-ratio: 1; max-width: 460px; width: 100%; }
+  .name-emblem :global(.ne-ring) { position: absolute; inset: 0; color: var(--silver); animation: ne-spin 200s linear infinite; }
+  .name-emblem :global(.ne-horse) { position: absolute; left: 19%; top: 16%; width: 62%; color: var(--gold-hi); }
+  @keyframes ne-spin { to { transform: rotate(-360deg); } }
+  .prose { display: grid; gap: 20px; }
+  .prose > * + * { margin-top: 0; }
+  .disc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .disc-card { padding: clamp(24px, 3vw, 36px); display: grid; gap: 14px; align-content: start; background: rgba(8, 17, 39, 0.6); transition: border-color 0.4s, transform 0.6s var(--ease); }
+  .disc-card:hover { border-color: var(--line); transform: translateY(-4px); }
+  .disc-card .chip { justify-self: start; }
+  .history { max-width: 900px; }
+  @media (max-width: 900px) {
+    .name-grid { grid-template-columns: 1fr; }
+    .name-emblem { max-width: 300px; }
+    .disc-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) { .disc-grid { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import PersonCard from '../../components/PersonCard.astro';
+
+const boytsy = (await getCollection('boytsy')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base title="Лучшие бойцы" description="Зал славы центра «Пересвет»: лучшие бойцы клуба, их звания и победы на соревнованиях по рукопашному и универсальному бою.">
+  <PageHero eyebrow="Зал славы" title="Бойцы" lead="Спортсмены клуба, которые представляют Армавир на соревнованиях." crumbs={[{ label: 'Бойцы' }]} arena />
+  <section class="section section-arena">
+    <div class="wrap grid">
+      {boytsy.map((b) => (
+        <PersonCard href={`/boytsy/${b.id}/`} name={b.data.name} role={b.data.rank ?? 'Звание и победы уточняются'} regalia={b.data.achievements} photo={b.data.photo} arena />
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 2.4vw, 32px); }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+</style>

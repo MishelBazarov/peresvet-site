@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from './PageHero.astro';
+interface Props { title: string; description: string; crumb: string }
+const { title, description, crumb } = Astro.props;
+---
+
+<Base title={title} description={description}>
+  <PageHero eyebrow="Документы" title={title} crumbs={[{ label: crumb }]} />
+  <section class="section">
+    <div class="wrap">
+      <p class="draft">Черновик. Перед запуском подставим реквизиты оператора и проверим текст.</p>
+      <div class="prose legal"><slot /></div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .draft { border: 1px dashed var(--bad); color: var(--bad); padding: 14px 18px; margin-bottom: 40px; max-width: 68ch; font-size: 15px; }
+  .legal { font-size: 16px; }
+  .legal :global(h2) { font-size: 26px; }
+  :global(.page-hero .h1) { font-size: clamp(36px, 6vw, 72px); }
+</style>

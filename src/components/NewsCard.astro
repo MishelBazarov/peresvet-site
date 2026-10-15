@@ -1,0 +1,78 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  date: Date;
+  type: 'turnir' | 'rezultaty' | 'sobytie';
+  summary: string;
+  place?: string;
+  example?: boolean;
+}
+const { href, title, date, type, summary, place, example = false } = Astro.props;
+const typeLabel = { turnir: 'Анонс турнира', rezultaty: 'Результаты', sobytie: 'Событие' }[type];
+const day = date.toLocaleDateString('ru-RU', { day: '2-digit' });
+const month = date.toLocaleDateString('ru-RU', { month: 'short' }).replace('.', '');
+const year = date.getFullYear();
+---
+
+<a href={href} class="news-card" data-type={type} data-reveal>
+  <div class="nc-date" aria-label={date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}>
+    <span class="nc-day">{day}</span>
+    <span class="nc-month">{month} {year}</span>
+  </div>
+  <div class="nc-body">
+    <div class="nc-tags">
+      <span class:list={['chip', { 'nc-result': type === 'rezultaty' }]}>{typeLabel}</span>
+      {place && <span class="nc-place">{place}</span>}
+      {example && <span class="chip chip-example">Пример</span>}
+    </div>
+    <h3 class="nc-title">{title}</h3>
+    <p class="nc-sum">{summary}</p>
+  </div>
+  <span class="nc-arrow" aria-hidden="true">→</span>
+</a>
+
+<style>
+  .news-card {
+    display: grid;
+    grid-template-columns: 96px 1fr auto;
+    gap: clamp(16px, 3vw, 40px);
+    align-items: start;
+    padding-block: 32px;
+    border-top: 1px solid var(--line-soft);
+    color: var(--ivory);
+    text-decoration: none;
+    position: relative;
+  }
+  .news-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -1px;
+    height: 1px;
+    width: 100%;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.7s var(--ease);
+  }
+  .news-card:hover::before { transform: scaleX(1); }
+  .nc-date { display: grid; gap: 4px; }
+  .nc-day { font: 800 64px/0.8 var(--f-sport); color: var(--ivory); }
+  .nc-month { font: 700 14px/1 var(--f-sport); letter-spacing: 0.18em; text-transform: uppercase; color: var(--mist); }
+  .nc-body { display: grid; gap: 12px; min-width: 0; }
+  .nc-tags { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .nc-result { background: var(--gold); color: var(--arena); border-color: var(--gold); }
+  .nc-place { font: 700 14px/1 var(--f-sport); letter-spacing: 0.16em; text-transform: uppercase; color: var(--mist); }
+  .nc-title { font: 800 clamp(28px, 3vw, 40px)/0.98 var(--f-sport); text-transform: uppercase; letter-spacing: 0.01em; transition: color 0.3s; }
+  .news-card:hover .nc-title { color: var(--gold-hi); }
+  .nc-sum { color: var(--mist); max-width: 62ch; }
+  .nc-arrow { font: 800 40px/1 var(--f-sport); color: var(--gold); transition: transform 0.5s var(--ease); }
+  .news-card:hover .nc-arrow { transform: translateX(8px); }
+  @media (max-width: 640px) {
+    .news-card { grid-template-columns: 1fr; gap: 14px; }
+    .nc-date { display: flex; align-items: baseline; gap: 10px; }
+    .nc-day { font-size: 40px; }
+    .nc-arrow { display: none; }
+  }
+</style>

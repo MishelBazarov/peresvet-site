@@ -1,0 +1,7 @@
+# config.php с токенами и почтой не отдаём наружу
+<Files "config.php">
+  Require all denied
+</Files>
+<Files "config.example.php">
+  Require all denied
+</Files>

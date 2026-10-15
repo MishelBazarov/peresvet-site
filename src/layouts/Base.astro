@@ -1,0 +1,66 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import LeadModal from '../components/LeadModal.astro';
+import { club, noPopupPaths } from '../data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  home?: boolean;
+}
+const { title, description, home = false } = Astro.props;
+const fullTitle = home ? `${club.fullName} — рукопашный бой в Армавире` : `${title} — «Пересвет», Армавир`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#081127" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content={club.fullName} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <!-- Анимации включаются только если JS загрузился; через 4 с без JS всё показываем как есть -->
+    <script is:inline>
+      (function () {
+        var d = document.documentElement;
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        d.classList.add('motion');
+        setTimeout(function () { if (!d.classList.contains('motion-ok')) d.classList.remove('motion'); }, 4000);
+      })();
+    </script>
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Перейти к содержанию</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <LeadModal data-no-popup={JSON.stringify(noPopupPaths)} />
+    <script>
+      import '../scripts/ui';
+      import '../scripts/motion';
+      import '../scripts/lead';
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .skip-link { position: absolute; left: 16px; top: -60px; z-index: 200; padding: 12px 16px; background: var(--gold); color: var(--night); font-weight: 600; }
+  .skip-link:focus { top: 12px; }
+  .split-mask { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.06em; margin-bottom: -0.06em; }
+  .split-char { display: inline-block; }
+</style>

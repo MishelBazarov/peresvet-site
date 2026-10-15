@@ -1,0 +1,51 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ArticleShell from '../../components/ArticleShell.astro';
+
+export async function getStaticPaths() {
+  const novosti = await getCollection('novosti');
+  return novosti.map((n) => ({ params: { slug: n.id }, props: { n } }));
+}
+const { n } = Astro.props;
+const { Content } = await render(n);
+const typeLabel = { turnir: 'Анонс турнира', rezultaty: 'Результаты', sobytie: 'Событие' }[n.data.type as 'turnir'];
+const placeWord = (p: number) => (p === 1 ? 'золото' : p === 2 ? 'серебро' : p === 3 ? 'бронза' : `${p} место`);
+---
+
+<Base title={n.data.title} description={n.data.summary}>
+  <ArticleShell eyebrow={typeLabel} title={n.data.title} date={n.data.date} crumbs={[{ href: '/novosti/', label: 'Новости' }, { label: typeLabel }]} meta={n.data.place ? [n.data.place] : []} example={n.data.example}>
+    <Content />
+    {n.data.source && <p class="source">Источник: <a href={n.data.source} target="_blank" rel="noopener">{new URL(n.data.source).hostname}</a></p>}
+    <Fragment slot="aside">
+      {n.data.medals.length > 0 && (
+        <div class="medals card">
+          <span class="eyebrow">Медали</span>
+          <ul>
+            {n.data.medals.map((m: { name: string; place: number; category?: string }) => (
+              <li class={`m${Math.min(m.place, 4)}`}>
+                <span class="m-place">{m.place}</span>
+                <span class="m-name">{m.name}<small>{placeWord(m.place)}{m.category ? ` · ${m.category}` : ''}</small></span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <a href="/novosti/" class="link-arrow">← Все новости</a>
+    </Fragment>
+  </ArticleShell>
+</Base>
+
+<style>
+  .source { font-size: 14px; color: var(--mist); }
+  .medals { padding: 24px; display: grid; gap: 16px; background: var(--arena-2); }
+  .medals ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .medals li { display: grid; grid-template-columns: 48px 1fr; gap: 14px; align-items: center; }
+  .m-place { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; font: 800 26px/1 var(--f-sport); color: var(--arena); }
+  .m1 .m-place { background: linear-gradient(145deg, var(--gold-hi), var(--gold)); }
+  .m2 .m-place { background: linear-gradient(145deg, #eef1f7, #a9b2c4); }
+  .m3 .m-place { background: linear-gradient(145deg, #e3a877, #a8683d); }
+  .m4 .m-place { background: var(--night-3); color: var(--ivory); }
+  .m-name { display: grid; font: 800 22px/1 var(--f-sport); text-transform: uppercase; }
+  .m-name small { font: 600 13px/1.4 var(--f-body); text-transform: none; color: var(--mist); margin-top: 4px; }
+</style>

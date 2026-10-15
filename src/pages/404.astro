@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import StarRing from '../components/StarRing.astro';
+import Horseman from '../components/Horseman.astro';
+---
+
+<Base title="Страница не найдена" description="Такой страницы на сайте «Пересвета» нет.">
+  <section class="nf">
+    <div class="nf-emblem" aria-hidden="true">
+      <StarRing count={12} size={3.4} class="nf-ring" />
+      <Horseman class="nf-horse" />
+    </div>
+    <p class="nf-code sport">404</p>
+    <h1 class="h2">Такой страницы нет</h1>
+    <p class="muted">Возможно, ссылка устарела. Начните с главной.</p>
+    <a href="/" class="btn btn-gold">На главную</a>
+  </section>
+</Base>
+
+<style>
+  .nf { min-height: 100svh; display: grid; place-content: center; justify-items: center; text-align: center; gap: 18px; padding: calc(var(--header-h) + 40px) var(--gutter) 80px; }
+  .nf-emblem { position: relative; width: 220px; aspect-ratio: 1; }
+  .nf-emblem :global(.nf-ring) { position: absolute; inset: 0; color: var(--silver); }
+  .nf-emblem :global(.nf-horse) { position: absolute; left: 19%; top: 16%; width: 62%; color: var(--gold); }
+  .nf-code { font-size: 96px; line-height: 0.8; font-weight: 800; color: var(--gold-hi); }
+</style>

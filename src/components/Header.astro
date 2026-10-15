@@ -1,0 +1,142 @@
+---
+import Horseman from './Horseman.astro';
+import { club, nav } from '../data/site';
+const path = Astro.url.pathname;
+const isActive = (href: string) => path === href || path.startsWith(href);
+---
+
+<header class="site-header" data-header>
+  <div class="wrap bar">
+    <a href="/" class="logo" aria-label="Пересвет — на главную">
+      <Horseman class="logo-mark" />
+      <span class="logo-text">
+        <span class="logo-name">Пересвет</span>
+        <span class="logo-city">Армавир</span>
+      </span>
+    </a>
+
+    <nav class="main-nav" aria-label="Основное меню">
+      <ul>
+        {nav.map((item) => (
+          <li><a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="actions">
+      <a class="phone" href={club.phoneHref}>{club.phone}</a>
+      <button type="button" class="btn btn-gold btn-sm" data-open-lead>Записаться</button>
+      <button type="button" class="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobile-menu" data-burger>
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu" hidden data-mobile-menu>
+    <nav aria-label="Меню">
+      <ul>
+        {nav.map((item) => (
+          <li><a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a></li>
+        ))}
+        <li><a href="/zapis/">Запись и контакты</a></li>
+      </ul>
+    </nav>
+    <div class="mm-foot">
+      <a class="mm-phone" href={club.phoneHref}>{club.phone}</a>
+      <button type="button" class="btn btn-gold" data-open-lead>Записаться на тренировку</button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    padding-top: env(safe-area-inset-top, 0px);
+    transition: background-color 0.4s, border-color 0.4s, backdrop-filter 0.4s;
+    border-bottom: 1px solid transparent;
+  }
+  .site-header.scrolled, .site-header.menu-open {
+    background: rgba(8, 17, 39, 0.82);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    border-bottom-color: var(--line-soft);
+  }
+  .bar { display: flex; align-items: center; gap: 28px; min-height: var(--header-h); }
+  .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ivory); flex-shrink: 0; }
+  .logo :global(.logo-mark) { width: 44px; color: var(--gold); transition: transform 0.6s var(--ease); }
+  .logo:hover :global(.logo-mark) { transform: translateX(4px) rotate(-3deg); }
+  .logo-text { display: grid; line-height: 1; gap: 4px; }
+  .logo-name { font: 800 22px/1 var(--f-sport); letter-spacing: 0.24em; text-transform: uppercase; }
+  .logo-city { font: 600 12px/1 var(--f-sport); letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold); }
+
+  .main-nav { flex: 1; display: flex; justify-content: center; }
+  .main-nav ul { display: flex; gap: clamp(16px, 2.2vw, 34px); list-style: none; margin: 0; padding: 0; }
+  .main-nav a {
+    position: relative;
+    font: 700 17px/1 var(--f-sport);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mist);
+    text-decoration: none;
+    padding-block: 10px;
+  }
+  .main-nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2px;
+    height: 1px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.45s var(--ease);
+  }
+  .main-nav a:hover, .main-nav a[aria-current] { color: var(--ivory); }
+  .main-nav a:hover::after, .main-nav a[aria-current]::after { transform: scaleX(1); transform-origin: left; }
+
+  .actions { display: flex; align-items: center; gap: 18px; }
+  .phone { font: 700 18px/1 var(--f-sport); letter-spacing: 0.08em; color: var(--ivory); text-decoration: none; white-space: nowrap; }
+  .phone:hover { color: var(--gold-hi); }
+
+  .burger { display: none; width: 44px; height: 44px; border: 1px solid var(--line); background: transparent; cursor: pointer; position: relative; }
+  .burger span { position: absolute; left: 12px; right: 12px; height: 1px; background: var(--ivory); transition: transform 0.35s var(--ease), top 0.35s var(--ease); }
+  .burger span:first-child { top: 17px; }
+  .burger span:last-child { top: 25px; }
+  .burger[aria-expanded='true'] span:first-child { top: 21px; transform: rotate(45deg); }
+  .burger[aria-expanded='true'] span:last-child { top: 21px; transform: rotate(-45deg); }
+
+  .mobile-menu {
+    position: fixed;
+    inset: calc(var(--header-h) + env(safe-area-inset-top, 0px)) 0 0 0;
+    background: var(--night);
+    padding: 32px var(--gutter) calc(32px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 32px;
+    overflow-y: auto;
+  }
+  .mobile-menu ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .mobile-menu a { font: 600 clamp(36px, 9vw, 52px)/1.15 var(--f-display); color: var(--ivory); text-decoration: none; }
+  .mobile-menu a[aria-current] { color: var(--gold-hi); }
+  .mm-foot { display: grid; gap: 16px; }
+  .mobile-menu .mm-phone { font: 800 30px/1 var(--f-sport); letter-spacing: 0.06em; color: var(--ivory); text-decoration: none; }
+
+  @media (max-width: 1100px) {
+    .phone { display: none; }
+  }
+  @media (max-width: 920px) {
+    .main-nav { display: none; }
+    .burger { display: block; }
+    .bar { justify-content: space-between; }
+  }
+  @media (max-width: 480px) {
+    .actions .btn { display: none; }
+    .logo-name { font-size: 20px; }
+  }
+</style>

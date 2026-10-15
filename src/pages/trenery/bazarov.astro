@@ -1,0 +1,200 @@
+---
+// Расширенная страница Т. Б. Базарова: тренер и депутат.
+import { getEntry, getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Soon from '../../components/Soon.astro';
+import StarRing from '../../components/StarRing.astro';
+import Horseman from '../../components/Horseman.astro';
+import PersonCard from '../../components/PersonCard.astro';
+
+const t = await getEntry('trenery', 'bazarov');
+if (!t) throw new Error('Нет файла src/content/trenery/bazarov.md');
+const { Content } = await render(t);
+// Ученики — бойцы, у которых в файле указано coach: bazarov
+const students = (await getCollection('boytsy')).filter((b) => b.data.coach === 'bazarov').sort((a, b) => a.data.order - b.data.order);
+
+const sections = [
+  { id: 'sport', label: 'Спорт' },
+  { id: 'deputat', label: 'Депутатская работа' },
+  { id: 'nagrady', label: 'Награды' },
+  { id: 'priyom', label: 'Приём граждан' },
+  { id: 'uchenik', label: 'Ученики' },
+];
+---
+
+<Base title="Базаров Тимур Базарович" description="Базаров Тимур Базарович — мастер спорта по рукопашному бою, тренер центра «Пересвет», депутат Совета муниципального образования Успенский район VIII созыва.">
+  <header class="bz-hero">
+    <StarRing count={16} size={2.4} class="bz-ring" />
+    <div class="wrap bz-grid">
+      <div class="bz-portrait" data-intro>
+        {t.data.photo ? <img src={t.data.photo} alt={t.data.name} /> : (
+          <div class="bz-ph" aria-hidden="true">
+            <StarRing count={12} size={3.4} class="bz-ph-ring" />
+            <Horseman class="bz-ph-horse" />
+          </div>
+        )}
+        <span class="bz-ph-note">{t.data.photo ? '' : 'Здесь будет парадный портрет'}</span>
+      </div>
+      <div class="bz-copy">
+        <nav class="crumbs" aria-label="Навигация по разделам" data-intro>
+          <a href="/">Главная</a><span aria-hidden="true">/</span><a href="/trenery/">Тренеры</a><span aria-hidden="true">/</span><span aria-current="page">Базаров</span>
+        </nav>
+        <h1 class="bz-name" data-intro>
+          <span class="gold-text">Базаров</span>
+          <span class="bz-name-rest">Тимур Базарович</span>
+        </h1>
+        <ul class="bz-roles" data-intro>
+          <li><span class="sport">Спорт</span>Мастер спорта по рукопашному бою, тренер по рукопашному и универсальному бою</li>
+          <li><span class="sport">Общество</span>Депутат Совета муниципального образования Успенский район VIII созыва</li>
+        </ul>
+        <div class="bz-actions" data-intro>
+          <button type="button" class="btn btn-gold" data-open-lead>Записаться на тренировку</button>
+          <a href="#priyom" class="btn btn-ghost">Приём граждан</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="bz-tabs" aria-label="Разделы страницы">
+    <div class="wrap"><ul>{sections.map((s) => <li><a href={`#${s.id}`}>{s.label}</a></li>)}</ul></div>
+  </nav>
+
+  <section class="section" id="sport">
+    <div class="wrap two">
+      <div class="sec-head">
+        <span class="eyebrow" data-reveal>Спорт</span>
+        <h2 class="h2" data-reveal>Тренер «Пересвета»</h2>
+      </div>
+      <div class="col">
+        <div class="prose" data-reveal><Content /></div>
+        <dl class="bz-stats" data-reveal>
+          <div><dt>МС</dt><dd>мастер спорта по рукопашному бою</dd></div>
+          <div><dt>2</dt><dd>вида спорта: рукопашный и универсальный бой</dd></div>
+        </dl>
+        <div data-reveal><Soon text="Спортивный путь: первые соревнования, главные победы, выполнение звания мастера спорта, переход к тренерской работе." /></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-banner" id="deputat">
+    <div class="wrap two">
+      <div class="sec-head">
+        <span class="eyebrow" data-reveal>Общественная деятельность</span>
+        <h2 class="h2" data-reveal>Депутатская работа</h2>
+      </div>
+      <div class="col">
+        <ul class="facts-list">
+          <li data-reveal><span class="sport">Орган</span>Совет муниципального образования Успенский район</li>
+          <li data-reveal><span class="sport">Созыв</span>VIII созыв</li>
+          <li data-reveal><span class="sport">Округ</span>Трёхмандатный избирательный округ № 5</li>
+          <li data-reveal><span class="sport">Комиссия</span>По социальным вопросам, образованию, культуре, спорту и делам молодёжи</li>
+        </ul>
+        <div data-reveal><Soon text="Направления работы, реализованные проекты в округе, поддержка детского спорта, новости депутатской деятельности." /></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="nagrady">
+    <div class="wrap two">
+      <div class="sec-head">
+        <span class="eyebrow" data-reveal>Регалии</span>
+        <h2 class="h2" data-reveal>Награды и звания</h2>
+      </div>
+      <div class="col" data-reveal>
+        <Soon text="Спортивные звания, благодарности, грамоты, государственные и общественные награды — с датами и фотографиями." />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-arena" id="priyom">
+    <div class="wrap two">
+      <div class="sec-head">
+        <span class="eyebrow" data-reveal>Для жителей</span>
+        <h2 class="arena-h2" data-reveal>Приём граждан</h2>
+      </div>
+      <div class="col" data-reveal>
+        <Soon text="График и место приёма жителей округа, телефон для предварительной записи." />
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="uchenik">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow" data-reveal>Ученики</span>
+        <h2 class="h2" data-reveal>Воспитанники тренера</h2>
+      </div>
+      {students.length > 0 ? (
+        <div class="students">
+          {students.map((b) => (
+            <PersonCard href={`/boytsy/${b.id}/`} name={b.data.name} role={b.data.rank ?? 'Звание и победы уточняются'} regalia={b.data.achievements} photo={b.data.photo} arena />
+          ))}
+        </div>
+      ) : (
+        <div data-reveal><Soon text="Воспитанники тренера с их званиями и победами. Появятся, когда в карточках бойцов будет указан тренер." /></div>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .bz-hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: calc(var(--header-h) + clamp(40px, 6vw, 80px)) clamp(56px, 8vw, 110px);
+    background:
+      radial-gradient(70% 80% at 25% 40%, rgba(45, 86, 196, 0.6), transparent 65%),
+      linear-gradient(180deg, var(--night), #0a1634);
+    border-bottom: 1px solid var(--line);
+  }
+  .bz-hero :global(.bz-ring) { position: absolute; width: 1100px; left: -380px; top: -200px; color: var(--silver); opacity: 0.12; }
+  .bz-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(32px, 6vw, 96px); align-items: center; position: relative; }
+  .bz-portrait { position: relative; display: grid; gap: 12px; }
+  .bz-portrait img, .bz-ph { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 999px 999px 0 0; border: 1px solid var(--line); }
+  .bz-ph { position: relative; background: radial-gradient(circle at 50% 38%, var(--banner-hi), var(--banner) 40%, var(--night) 100%); overflow: hidden; }
+  .bz-ph :global(.bz-ph-ring) { position: absolute; width: 90%; left: 5%; top: 14%; color: var(--silver); opacity: 0.8; }
+  .bz-ph :global(.bz-ph-horse) { position: absolute; width: 56%; left: 22%; top: 25%; color: var(--gold-hi); }
+  .bz-ph-note { font: 600 13px/1 var(--f-sport); letter-spacing: 0.2em; text-transform: uppercase; color: var(--mist); text-align: center; }
+  .bz-copy { display: grid; gap: 28px; justify-items: start; }
+  .crumbs { display: flex; flex-wrap: wrap; gap: 10px; font: 600 15px/1 var(--f-sport); letter-spacing: 0.14em; text-transform: uppercase; color: var(--mist); }
+  .crumbs a { color: var(--mist); text-decoration: none; }
+  .crumbs a:hover { color: var(--gold-hi); }
+  .crumbs [aria-current] { color: var(--ivory); }
+  .bz-name { display: grid; gap: 6px; }
+  .bz-name .gold-text { font: 600 clamp(64px, 10vw, 150px)/0.85 var(--f-display); text-transform: uppercase; letter-spacing: 0.01em; }
+  .bz-name-rest { font: 500 italic clamp(30px, 3.6vw, 48px)/1 var(--f-display); color: var(--ivory); }
+  .bz-roles { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; width: 100%; max-width: 620px; }
+  .bz-roles li { display: grid; grid-template-columns: 110px 1fr; gap: 16px; padding-block: 16px; border-top: 1px solid var(--line-soft); font-size: 16px; }
+  .bz-roles .sport { font-weight: 700; font-size: 14px; letter-spacing: 0.2em; color: var(--gold); padding-top: 3px; }
+  .bz-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+  .bz-tabs { position: sticky; top: calc(var(--header-h) + env(safe-area-inset-top, 0px)); z-index: 30; background: rgba(5, 7, 13, 0.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line-soft); }
+  .bz-tabs ul { list-style: none; margin: 0; padding: 0; display: flex; gap: clamp(18px, 3vw, 40px); overflow-x: auto; scrollbar-width: none; }
+  .bz-tabs ul::-webkit-scrollbar { display: none; }
+  .bz-tabs a { display: inline-block; padding-block: 18px; font: 700 16px/1 var(--f-sport); letter-spacing: 0.16em; text-transform: uppercase; color: var(--mist); text-decoration: none; white-space: nowrap; }
+  .bz-tabs a:hover { color: var(--gold-hi); }
+
+  .two { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: clamp(28px, 5vw, 80px); align-items: start; }
+  .two .sec-head { position: sticky; top: calc(var(--header-h) + 90px); }
+  .col { display: grid; gap: 28px; min-width: 0; }
+  .bz-stats { margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .bz-stats > div { background: var(--night); padding: 22px; }
+  .bz-stats dt { font: 800 56px/0.9 var(--f-sport); color: var(--gold-hi); }
+  .bz-stats dd { margin: 8px 0 0; color: var(--mist); font-size: 15px; }
+  .facts-list { list-style: none; margin: 0; padding: 0; }
+  .facts-list li { display: grid; grid-template-columns: 120px 1fr; gap: 16px; padding-block: 18px; border-top: 1px solid var(--line-soft); font-size: 17px; }
+  .facts-list .sport { font-weight: 700; font-size: 14px; letter-spacing: 0.2em; color: var(--gold); padding-top: 3px; }
+  .arena-h2 { font: 800 clamp(44px, 6vw, 84px)/0.9 var(--f-sport); text-transform: uppercase; }
+  .students { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 2.4vw, 32px); }
+
+  @media (max-width: 900px) {
+    .bz-grid, .two { grid-template-columns: 1fr; }
+    .bz-portrait { max-width: 340px; }
+    .two .sec-head { position: static; }
+    .students { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .students { grid-template-columns: 1fr; }
+    .bz-roles li, .facts-list li { grid-template-columns: 1fr; gap: 6px; }
+  }
+</style>

@@ -1,0 +1,77 @@
+---
+import LeadForm from './LeadForm.astro';
+import Horseman from './Horseman.astro';
+import StarRing from './StarRing.astro';
+const attrs = Astro.props;
+---
+
+<dialog class="lead-dialog" id="lead-dialog" aria-labelledby="lead-dialog-title" data-lead-dialog {...attrs}>
+  <div class="ld-inner">
+    <button type="button" class="ld-close" aria-label="Закрыть" data-close-lead>
+      <span></span><span></span>
+    </button>
+    <aside class="ld-side" aria-hidden="true">
+      <StarRing count={12} size={4} class="ld-ring" />
+      <Horseman class="ld-horse" />
+    </aside>
+    <div class="ld-body">
+      <span class="eyebrow">Запись в «Пересвет»</span>
+      <h2 class="ld-title" id="lead-dialog-title">Приходите на первую тренировку</h2>
+      <p class="muted ld-text">Оставьте телефон. Тренер перезвонит, ответит на вопросы и подберёт группу. Набор детей с 5 лет.</p>
+      <LeadForm id="modal" compact />
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .lead-dialog {
+    width: min(980px, calc(100vw - 32px));
+    max-height: calc(100dvh - 32px);
+    padding: 0;
+    border: 1px solid var(--line);
+    background: var(--night-2);
+    color: var(--ivory);
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+  .lead-dialog::backdrop { background: rgba(3, 6, 14, 0.72); backdrop-filter: blur(6px); }
+  .lead-dialog[open] { animation: ld-in 0.6s var(--ease) both; }
+  .lead-dialog[open]::backdrop { animation: ld-fade 0.5s ease both; }
+  @keyframes ld-in { from { opacity: 0; transform: translateY(28px) scale(0.98); } }
+  @keyframes ld-fade { from { opacity: 0; } }
+  .ld-inner { display: grid; grid-template-columns: 300px 1fr; position: relative; }
+  .ld-side {
+    position: relative;
+    background: radial-gradient(circle at 50% 45%, var(--banner-hi), var(--banner) 45%, var(--night) 100%);
+    min-height: 100%;
+    overflow: hidden;
+  }
+  .ld-side :global(.ld-ring) { position: absolute; width: 130%; left: -15%; top: 50%; transform: translateY(-50%); color: var(--silver); opacity: 0.9; }
+  .ld-side :global(.ld-horse) { position: absolute; width: 62%; left: 19%; top: 50%; transform: translateY(-50%); color: var(--gold-hi); }
+  .ld-body { padding: clamp(28px, 4vw, 48px); display: grid; gap: 16px; align-content: start; }
+  .ld-title { font: 600 clamp(30px, 3.6vw, 44px)/1.02 var(--f-display); }
+  .ld-text { margin-bottom: 8px; max-width: 46ch; }
+  .ld-close { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; background: transparent; border: 1px solid var(--line-soft); cursor: pointer; z-index: 2; }
+  .ld-close:hover { border-color: var(--gold); }
+  .ld-close span { position: absolute; left: 12px; right: 12px; top: 21px; height: 1px; background: var(--ivory); }
+  .ld-close span:first-child { transform: rotate(45deg); }
+  .ld-close span:last-child { transform: rotate(-45deg); }
+
+  /* на телефоне — выезжающая снизу панель, не на весь экран */
+  @media (max-width: 760px) {
+    .lead-dialog {
+      width: 100vw;
+      max-width: 100vw;
+      margin: auto 0 0;
+      max-height: 92dvh;
+      border-width: 1px 0 0;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    .lead-dialog[open] { animation: ld-up 0.5s var(--ease) both; }
+    @keyframes ld-up { from { transform: translateY(100%); } }
+    .ld-inner { grid-template-columns: 1fr; }
+    .ld-side { display: none; }
+    .ld-body { padding: 28px 16px 24px; }
+    .ld-title { padding-right: 48px; }
+  }
+</style>

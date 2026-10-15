@@ -1,0 +1,84 @@
+---
+import Horseman from './Horseman.astro';
+import StarRing from './StarRing.astro';
+import { club, halls, nav } from '../data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="f-top">
+      <div class="f-brand">
+        <div class="f-emblem">
+          <StarRing count={12} size={4} class="f-ring" />
+          <Horseman class="f-horse" />
+        </div>
+        <div>
+          <p class="f-name">Пересвет</p>
+          <p class="muted">{club.fullName}<br />{club.city}, {club.region}</p>
+        </div>
+      </div>
+      <div class="f-cta">
+        <p class="f-cta-title">Приходите на тренировку</p>
+        <a class="f-phone" href={club.phoneHref}>{club.phone}</a>
+        <button type="button" class="btn btn-gold" data-open-lead>Записаться</button>
+      </div>
+    </div>
+
+    <div class="f-cols">
+      <div>
+        <p class="f-label">Разделы</p>
+        <ul>
+          {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+          <li><a href="/zapis/">Запись и контакты</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="f-label">Залы</p>
+        <ul>
+          {halls.map((h) => <li><a href={h.yandex} target="_blank" rel="noopener">{h.address}</a></li>)}
+        </ul>
+      </div>
+      <div>
+        <p class="f-label">Мы в сети</p>
+        <ul>
+          {club.socials.map((s) => <li><a href={s.url} target="_blank" rel="noopener">{s.name}</a></li>)}
+        </ul>
+      </div>
+    </div>
+
+    <div class="f-bottom">
+      <span>© {year} {club.fullName}</span>
+      <span class="f-legal">
+        <a href="/politika/">Политика обработки данных</a>
+        <a href="/soglasie/">Согласие на обработку данных</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { background: var(--arena); border-top: 1px solid var(--line); padding-block: clamp(56px, 8vw, 96px) 32px; }
+  .f-top { display: flex; justify-content: space-between; gap: 40px; flex-wrap: wrap; padding-bottom: 48px; border-bottom: 1px solid var(--line-soft); }
+  .f-brand { display: flex; gap: 24px; align-items: center; }
+  .f-emblem { position: relative; width: 112px; aspect-ratio: 1; flex-shrink: 0; }
+  .f-emblem :global(.f-ring) { position: absolute; inset: 0; color: var(--silver); opacity: 0.7; }
+  .f-emblem :global(.f-horse) { position: absolute; inset: 24%; color: var(--gold); }
+  .f-name { font: 600 40px/1 var(--f-display); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+  .f-brand .muted { font-size: 15px; }
+  .f-cta { display: grid; gap: 12px; justify-items: start; }
+  .f-cta-title { font: 500 italic 24px/1.2 var(--f-display); }
+  .f-phone { font: 800 40px/1 var(--f-sport); letter-spacing: 0.04em; color: var(--ivory); text-decoration: none; }
+  .f-phone:hover { color: var(--gold-hi); }
+  .f-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; padding-block: 40px; }
+  .f-label { font: 700 14px/1 var(--f-sport); letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+  .f-cols ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .f-cols a { color: var(--mist); text-decoration: none; font-size: 15px; }
+  .f-cols a:hover { color: var(--ivory); }
+  .f-bottom { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 24px; border-top: 1px solid var(--line-soft); font-size: 13px; color: var(--mist); }
+  .f-legal { display: flex; gap: 20px; flex-wrap: wrap; }
+  .f-legal a { color: var(--mist); }
+  @media (max-width: 720px) {
+    .f-cols { grid-template-columns: 1fr; gap: 28px; }
+  }
+</style>

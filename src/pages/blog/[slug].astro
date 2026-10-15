@@ -1,0 +1,32 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ArticleShell from '../../components/ArticleShell.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((p) => ({ params: { slug: p.id }, props: { p } }));
+}
+const { p } = Astro.props;
+const { Content } = await render(p);
+---
+
+<Base title={p.data.title} description={p.data.summary}>
+  <ArticleShell eyebrow="Блог" title={p.data.title} date={p.data.date} crumbs={[{ href: '/blog/', label: 'Блог' }, { label: 'Статья' }]} meta={p.data.readingMinutes ? [`${p.data.readingMinutes} мин чтения`] : []}>
+    <Content />
+    <Fragment slot="aside">
+      <div class="cta card">
+        <span class="eyebrow">Запись</span>
+        <p class="cta-title">Хотите попробовать?</p>
+        <p class="muted">Оставьте телефон, тренер перезвонит и подберёт группу.</p>
+        <button type="button" class="btn btn-gold" data-open-lead>Записаться</button>
+      </div>
+      <a href="/blog/" class="link-arrow">← Все статьи</a>
+    </Fragment>
+  </ArticleShell>
+</Base>
+
+<style>
+  .cta { padding: 24px; display: grid; gap: 12px; justify-items: start; background: radial-gradient(circle at 100% 0%, rgba(45, 86, 196, 0.5), transparent 60%), var(--night-2); }
+  .cta-title { font: 600 28px/1.1 var(--f-display); }
+</style>

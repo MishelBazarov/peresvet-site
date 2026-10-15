@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { club, halls } from '../data/site';
+---
+
+<Base title="Запись и контакты" description="Запишитесь на тренировку в центр «Пересвет» в Армавире: форма заявки, телефон, адреса залов.">
+  <PageHero eyebrow="Запись и контакты" title="Записаться" lead="Оставьте заявку или позвоните. Тренер ответит на вопросы и подберёт группу." crumbs={[{ label: 'Запись и контакты' }]} />
+
+  <section class="section">
+    <div class="wrap grid">
+      <div class="form card" data-reveal>
+        <h2 class="h3">Заявка на тренировку</h2>
+        <LeadForm id="page" />
+      </div>
+      <aside class="contacts">
+        <div class="c-block" data-reveal>
+          <span class="eyebrow">Телефон</span>
+          <a class="c-phone" href={club.phoneHref}>{club.phone}</a>
+        </div>
+        {club.email && (
+          <div class="c-block" data-reveal>
+            <span class="eyebrow">Почта</span>
+            <a href={`mailto:${club.email}`}>{club.email}</a>
+          </div>
+        )}
+        <div class="c-block" data-reveal>
+          <span class="eyebrow">Залы</span>
+          <ul>
+            {halls.map((h) => <li><a href={h.yandex} target="_blank" rel="noopener">{h.address}</a>{h.note && <span class="muted"> · {h.note}</span>}</li>)}
+          </ul>
+        </div>
+        <div class="c-block" data-reveal>
+          <span class="eyebrow">Мы в сети</span>
+          <ul>
+            {club.socials.map((s) => <li><a href={s.url} target="_blank" rel="noopener">{s.name}</a></li>)}
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .grid { display: grid; grid-template-columns: 1.3fr 0.7fr; gap: clamp(28px, 5vw, 80px); align-items: start; }
+  .form { padding: clamp(24px, 3.4vw, 44px); display: grid; gap: 24px; }
+  .contacts { display: grid; gap: 32px; }
+  .c-block { display: grid; gap: 12px; }
+  .c-phone { font: 800 clamp(34px, 4vw, 48px)/1 var(--f-sport); color: var(--ivory); text-decoration: none; }
+  .c-phone:hover { color: var(--gold-hi); }
+  .c-block ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+</style>

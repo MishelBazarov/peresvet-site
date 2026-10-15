@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import PersonCard from '../../components/PersonCard.astro';
+
+const trenery = (await getCollection('trenery')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base title="Тренеры" description="Тренеры центра «Пересвет» в Армавире: мастера спорта и кандидаты в мастера спорта по рукопашному и универсальному бою.">
+  <PageHero eyebrow="Тренерский состав" title="Тренеры" lead="Мастера спорта и кандидаты в мастера спорта, которые сами выходили на ковёр." crumbs={[{ label: 'Тренеры' }]} />
+  <section class="section">
+    <div class="wrap grid">
+      {trenery.map((t) => (
+        <PersonCard href={`/trenery/${t.id}/`} name={t.data.name} role={t.data.role} regalia={t.data.regalia} photo={t.data.photo} large={t.data.featured} />
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .grid { display: grid; grid-template-columns: 1.35fr 1fr 1fr; gap: clamp(18px, 2.4vw, 32px); align-items: start; }
+  @media (max-width: 980px) { .grid { grid-template-columns: 1fr 1fr; } .grid > :global(:first-child) { grid-column: 1 / -1; } }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+</style>
