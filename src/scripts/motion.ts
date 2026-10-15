@@ -12,6 +12,9 @@ const root = document.documentElement;
 root.classList.add('motion-ok');
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// Вращение звёзд в гербе (SVG-анимация) останавливаем, если движение отключено
+if (reduce) document.querySelectorAll<SVGSVGElement>('svg.emblem').forEach((svg) => svg.pauseAnimations());
+
 if (!reduce) {
   gsap.registerPlugin(ScrollTrigger);
 

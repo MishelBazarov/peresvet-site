@@ -1,33 +1,53 @@
 ---
-// Герб клуба: кольцо серебряных звёзд и Пересвет на коне внутри.
-// Всадник рассчитан так, чтобы копьё и копыта не заходили на звёзды:
-// берём наименьший круг, в который вписан контур фигуры, и вписываем его внутрь кольца.
+// Герб клуба, как на флаге: шесть гранёных серебряных звёзд по кругу и Пересвет на коне.
+// Кольцо медленно вращается, звёзды при этом остаются ровными и иногда поблёскивают.
+// Всадник вписан внутрь кольца по описанному кругу фигуры, поэтому звёзды на него не наезжают.
 interface Props {
   class?: string;
   stars?: number;
-  starSize?: number; // полуразмер звезды в единицах 100×100
+  starR?: number; // внешний радиус звезды в единицах 100×100
   ringR?: number; // радиус кольца звёзд
   gap?: number; // зазор между звёздами и фигурой
+  spin?: boolean;
   label?: string;
 }
-const { class: cls = '', stars = 12, starSize = 3.2, ringR = 44, gap = 3, label } = Astro.props;
+const { class: cls = '', stars = 6, starR = 7.4, ringR = 43.5, gap = 1.6, spin = true, label } = Astro.props;
 
 // public/brand/horseman.svg: viewBox и описанный круг фигуры (посчитаны по контурам файла)
 const VB = { x: 26, y: 23, w: 1462, h: 1605 };
 const MEC = { cx: 741.5, cy: 813.6, r: 1056.2 };
+const k = (ringR - starR - gap) / MEC.r;
+const fig = { w: VB.w * k, h: VB.h * k, x: 50 - (MEC.cx - VB.x) * k, y: 50 - (MEC.cy - VB.y) * k };
 
-const k = (ringR - starSize - gap) / MEC.r;
-const fig = {
-  w: VB.w * k,
-  h: VB.h * k,
-  x: 50 - (MEC.cx - VB.x) * k,
-  y: 50 - (MEC.cy - VB.y) * k,
+// Пятиконечная звезда из 10 граней: у каждого луча светлая и тёмная сторона.
+const deg = Math.PI / 180;
+const LIGHT = -125 * deg; // свет слева сверху
+const inner = 0.42;
+const pt = (a: number, r: number) => [r * Math.cos(a), r * Math.sin(a)];
+const mix = (t: number) => {
+  const dark = [92, 104, 128], light = [246, 248, 252];
+  return `rgb(${dark.map((d, i) => Math.round(d + (light[i] - d) * t)).join(',')})`;
 };
-const star = 'M0 -1Q.13 -.13 1 0Q.13 .13 0 1Q-.13 .13 -1 0Q-.13 -.13 0 -1Z';
+const facets: { d: string; fill: string }[] = [];
+for (let i = 0; i < 5; i++) {
+  const ao = (-90 + 72 * i) * deg;
+  const [ox, oy] = pt(ao, 1);
+  const [lx, ly] = pt(ao - 36 * deg, inner);
+  const [rx, ry] = pt(ao + 36 * deg, inner);
+  for (const [side, [px, py]] of [[-1, [lx, ly]], [1, [rx, ry]]] as [number, number[]][]) {
+    const normal = ao + side * 90 * deg;
+    const t = 0.5 + 0.5 * Math.cos(normal - LIGHT);
+    facets.push({ d: `M0 0L${px.toFixed(3)} ${py.toFixed(3)}L${ox.toFixed(3)} ${oy.toFixed(3)}Z`, fill: mix(0.15 + 0.85 * t) });
+  }
+}
+const outline = Array.from({ length: 10 }, (_, i) => pt((-90 + 36 * i) * deg, i % 2 ? inner : 1).map((v) => v.toFixed(3)).join(' ')).join('L');
+
 const points = Array.from({ length: stars }, (_, i) => {
   const a = (i / stars) * Math.PI * 2 - Math.PI / 2;
   return { x: 50 + ringR * Math.cos(a), y: 50 + ringR * Math.sin(a) };
 });
+const uid = Math.random().toString(36).slice(2, 8);
+const DUR = 120; // секунд на оборот
 ---
 
 <svg
@@ -37,15 +57,33 @@ const points = Array.from({ length: stars }, (_, i) => {
   aria-label={label}
   aria-hidden={label ? undefined : 'true'}
 >
-  <g class="emblem-stars">
-    {points.map((p) => (
-      <path d={star} transform={`translate(${p.x.toFixed(2)} ${p.y.toFixed(2)}) rotate(45) scale(${starSize})`} />
+  <defs>
+    <filter id={`es-${uid}`} x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0.25" dy="0.6" stdDeviation="0.6" flood-color="#020611" flood-opacity="0.55" />
+    </filter>
+    <g id={`star-${uid}`}>
+      {facets.map((f) => <path d={f.d} fill={f.fill} />)}
+      <path d={`M${outline}Z`} fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.04" stroke-linejoin="round" />
+    </g>
+  </defs>
+
+  <g filter={`url(#es-${uid})`}>
+    {spin && <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur={`${DUR}s`} repeatCount="indefinite" />}
+    {points.map((p, i) => (
+      <g transform={`translate(${p.x.toFixed(2)} ${p.y.toFixed(2)}) scale(${starR})`}>
+        <g>
+          {spin && <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur={`${DUR}s`} repeatCount="indefinite" />}
+          <use href={`#star-${uid}`} />
+          <path d={`M${outline}Z`} fill="#fff" opacity="0">
+            <animate attributeName="opacity" values="0;0;0.55;0" keyTimes="0;0.8;0.88;1" dur="7s" begin={`${(i * 1.17).toFixed(2)}s`} repeatCount="indefinite" />
+          </path>
+        </g>
+      </g>
     ))}
   </g>
   <image href="/brand/horseman.svg" x={fig.x.toFixed(2)} y={fig.y.toFixed(2)} width={fig.w.toFixed(2)} height={fig.h.toFixed(2)} />
 </svg>
 
 <style>
-  .emblem { display: block; width: 100%; height: auto; overflow: visible; color: var(--silver); }
-  .emblem-stars { fill: currentColor; }
+  .emblem { display: block; width: 100%; height: auto; overflow: visible; }
 </style>
