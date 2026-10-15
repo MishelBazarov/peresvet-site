@@ -1,0 +1,43 @@
+---
+import type { Hall } from '../data/site';
+interface Props {
+  hall: Hall;
+}
+const { hall } = Astro.props;
+---
+
+<article class="hall" data-reveal>
+  <div class="h-top">
+    <span class="h-city">{hall.area ? `${hall.area} · ${hall.city}` : hall.city}</span>
+    {hall.isNew && <span class="h-new hand">новый зал!</span>}
+  </div>
+  <h3 class="h-name">{hall.name}</h3>
+  <p class="h-addr">{hall.address}</p>
+  {hall.note && hall.note !== hall.name && <p class="h-note">{hall.note}</p>}
+  <div class="h-links">
+    <a href={hall.yandex} target="_blank" rel="noopener" class="link-arrow">Яндекс Карты <span>↗</span></a>
+    {hall.gis && <a href={hall.gis} target="_blank" rel="noopener" class="link-arrow">2ГИС <span>↗</span></a>}
+  </div>
+</article>
+
+<style>
+  .hall {
+    position: relative;
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    padding: clamp(24px, 3vw, 36px);
+    background: var(--night-2);
+    border: 1px solid var(--line-soft);
+    min-width: 0;
+    transition: border-color 0.4s, transform 0.6s var(--ease);
+  }
+  .hall:hover { border-color: var(--line); transform: translateY(-4px); }
+  .h-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 28px; }
+  .h-city { font: 700 14px/1 var(--f-sport); letter-spacing: 0.2em; text-transform: uppercase; color: var(--mist); }
+  .h-new { transform: rotate(-5deg); white-space: nowrap; }
+  .h-name { font: 600 clamp(24px, 2.2vw, 30px)/1.1 var(--f-display); margin-top: 6px; }
+  .h-addr { font: 800 clamp(26px, 2.6vw, 34px)/1 var(--f-sport); text-transform: uppercase; color: var(--gold-hi); }
+  .h-note { color: var(--mist); font-size: 15px; }
+  .h-links { display: flex; gap: 14px 24px; flex-wrap: wrap; margin-top: 12px; }
+</style>

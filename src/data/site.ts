@@ -20,6 +20,9 @@ export const club = {
 export type Hall = {
   id: string;
   name: string;
+  city: string; // населённый пункт
+  area?: string; // подпись над адресом
+  where?: string; // «где» для текста: «в Успенском районе» (по умолчанию «в Армавире»)
   address: string;
   note?: string;
   yandex: string;
@@ -27,15 +30,34 @@ export type Hall = {
   isNew?: boolean;
 };
 
+const ymap = (q: string) => 'https://yandex.ru/maps/?text=' + encodeURIComponent(q);
+
 export const halls: Hall[] = [
   {
     id: 'volodarskogo',
     name: 'Зал на Володарского',
+    city: 'Армавир',
     address: 'ул. Володарского, 55, 2 этаж',
     note: 'район 3-й городской больницы',
-    yandex: 'https://yandex.ru/maps/?text=' + encodeURIComponent('Армавир, улица Володарского, 55'),
+    yandex: ymap('Армавир, улица Володарского, 55'),
     gis: 'https://2gis.ru/armawir/firm/70000001007038867',
     isNew: true,
+  },
+  {
+    id: 'azovskaya',
+    name: 'Спортшкола «Лидер»',
+    city: 'Армавир',
+    address: 'ул. Азовская, 118',
+    yandex: ymap('Армавир, Азовская улица, 118'),
+  },
+  {
+    id: 'konokovo',
+    name: 'ДК «Юбилей»',
+    city: 'Коноково',
+    area: 'Успенский район',
+    where: 'в Успенском районе',
+    address: 'с. Коноково, ул. Калинина, 51',
+    yandex: ymap('Коноково, улица Калинина, 51, Успенский район'),
   },
 ];
 

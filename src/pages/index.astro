@@ -7,13 +7,13 @@ import Scribble from '../components/Scribble.astro';
 import PersonCard from '../components/PersonCard.astro';
 import NewsCard from '../components/NewsCard.astro';
 import LeadForm from '../components/LeadForm.astro';
+import HallCard from '../components/HallCard.astro';
 import { club, halls, disciplines, plural } from '../data/site';
 
 const trenery = (await getCollection('trenery')).sort((a, b) => a.data.order - b.data.order);
 const boytsy = (await getCollection('boytsy')).sort((a, b) => a.data.order - b.data.order).slice(0, 3);
 const novosti = (await getCollection('novosti')).sort((a, b) => +b.data.date - +a.data.date).slice(0, 3);
 const masters = trenery.filter((t) => t.data.regalia.some((r) => /^мастер спорта/i.test(r))).length;
-const hall = halls[0];
 
 const schema = {
   '@context': 'https://schema.org',
@@ -24,7 +24,7 @@ const schema = {
   address: halls.map((h) => ({
     '@type': 'PostalAddress',
     streetAddress: h.address,
-    addressLocality: club.city,
+    addressLocality: h.city,
     addressRegion: club.region,
     addressCountry: 'RU',
   })),
@@ -152,30 +152,18 @@ const schema = {
     </div>
   </section>
 
-  <!-- ЗАЛ -->
+  <!-- ЗАЛЫ -->
   <section class="section place">
-    <div class="wrap place-grid">
-      <div class="place-copy">
-        <h2 class="h2" data-reveal>Где тренируемся</h2>
-        <div class="place-addr-wrap" data-reveal>
-          {hall.isNew && <span class="place-new hand">новый зал!</span>}
-          <p class="place-addr">{hall.address}</p>
-          {hall.note && <p class="muted">{hall.note}, {club.city}</p>}
+    <div class="wrap">
+      <div class="sec-head-row">
+        <div class="place-head">
+          <h2 class="h2" data-reveal>Где тренируемся</h2>
+          <p class="hand place-hint" data-reveal>выбирайте, где ближе</p>
         </div>
-        <div class="place-links" data-reveal>
-          <a href={hall.yandex} target="_blank" rel="noopener" class="link-arrow">Яндекс Карты <span>↗</span></a>
-          {hall.gis && <a href={hall.gis} target="_blank" rel="noopener" class="link-arrow">2ГИС <span>↗</span></a>}
-          <a href="/zaly/" class="link-arrow">Расписание <span>→</span></a>
-        </div>
+        <a href="/zaly/" class="link-arrow" data-reveal>Залы и расписание <span>→</span></a>
       </div>
-      <div class="place-map" aria-hidden="true" data-reveal>
-        <svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice">
-          <path d="M-10 170C60 160 120 150 190 168S330 190 410 150" class="m-river" />
-          <path d="M40 -10L80 270M250 -10L210 270M-10 70L410 50M-10 220L410 205M330 -10L360 270" class="m-road" />
-          <path d="M120 -10L150 270M-10 120L410 110" class="m-street" />
-        </svg>
-        <span class="pin"></span>
-        <span class="pin-label hand">мы здесь</span>
+      <div class="halls">
+        {halls.map((h) => <HallCard hall={h} />)}
       </div>
     </div>
   </section>
@@ -279,20 +267,10 @@ const schema = {
   .hall-of-fame { border-top: 1px solid var(--line-soft); }
   .fighters { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 2.4vw, 32px); }
 
-  /* ---------- зал ---------- */
-  .place-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
-  .place-copy { display: grid; gap: 28px; justify-items: start; }
-  .place-addr-wrap { position: relative; display: grid; gap: 8px; justify-items: start; }
-  .place-new { transform: rotate(-5deg); margin-bottom: 2px; }
-  .place-addr { font: 800 clamp(36px, 4.4vw, 60px)/0.95 var(--f-sport); text-transform: uppercase; max-width: 12ch; }
-  .place-links { display: flex; gap: 22px 28px; flex-wrap: wrap; }
-  .place-map { position: relative; aspect-ratio: 400 / 260; border: 1px solid var(--line-soft); background: radial-gradient(circle at 52% 52%, rgba(45, 86, 196, 0.55), transparent 62%), var(--night-2); overflow: hidden; }
-  .place-map svg { width: 100%; height: 100%; }
-  .m-road { stroke: rgba(201, 209, 227, 0.28); stroke-width: 6; fill: none; }
-  .m-street { stroke: rgba(201, 209, 227, 0.16); stroke-width: 3; fill: none; }
-  .m-river { stroke: rgba(74, 111, 214, 0.55); stroke-width: 14; fill: none; stroke-linecap: round; }
-  .pin { position: absolute; left: 52%; top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 8px rgba(201, 165, 92, 0.22), 0 0 0 18px rgba(201, 165, 92, 0.08); }
-  .pin-label { position: absolute; left: calc(52% + 22px); top: calc(50% - 44px); transform: rotate(-5deg); }
+  /* ---------- залы ---------- */
+  .place-head { display: flex; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
+  .place-hint { transform: rotate(-4deg); padding-bottom: 6px; }
+  .halls { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2vw, 28px); }
 
   /* ---------- запись ---------- */
   .signup-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
@@ -313,7 +291,8 @@ const schema = {
     .hero-grid { grid-template-columns: 1fr; }
     .hero-title { font-size: clamp(56px, 15vw, 140px); }
     .hero-emblem { order: -1; max-width: 340px; }
-    .about-grid, .signup-grid, .place-grid { grid-template-columns: 1fr; }
+    .about-grid, .signup-grid { grid-template-columns: 1fr; }
+    .halls { grid-template-columns: 1fr 1fr; }
     .coaches { grid-template-columns: repeat(2, 1fr); }
     .coaches > :global(:first-child) { grid-column: 1 / -1; }
     .disc { grid-template-columns: 1fr auto; }
@@ -322,7 +301,7 @@ const schema = {
   @media (max-width: 680px) {
     .hero-emblem { max-width: 250px; }
     .hero-note { margin-left: 12px; }
-    .coaches, .fighters { grid-template-columns: 1fr; }
+    .coaches, .fighters, .halls { grid-template-columns: 1fr; }
     .facts > div { grid-template-columns: 84px 1fr; }
   }
 </style>
