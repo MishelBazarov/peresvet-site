@@ -13,10 +13,12 @@ interface Props {
 const { title, description, home = false } = Astro.props;
 const fullTitle = home ? `${club.fullName} — рукопашный бой в Армавире` : `${title} — «Пересвет», Армавир`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+// Превью для тренеров (GitHub Pages): закрыто от поисковиков, форма не отправляет заявки
+const preview = process.env.PREVIEW === '1';
 ---
 
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-preview={preview ? '' : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -25,6 +27,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#081127" />
+    {preview && <meta name="robots" content="noindex, nofollow" />}
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="ru_RU" />
     <meta property="og:site_name" content={club.fullName} />
@@ -50,6 +53,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     </main>
     <Footer />
     <LeadModal data-no-popup={JSON.stringify(noPopupPaths)} />
+    {preview && <p class="preview-badge">черновик сайта · для просмотра</p>}
     <script>
       import '../scripts/ui';
       import '../scripts/motion';
@@ -61,6 +65,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 <style is:global>
   .skip-link { position: absolute; left: 16px; top: -60px; z-index: 200; padding: 12px 16px; background: var(--gold); color: var(--night); font-weight: 600; }
   .skip-link:focus { top: 12px; }
+  .preview-badge { position: fixed; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 90; margin: 0; padding: 8px 14px 9px; font: 600 20px/1 var(--f-hand); color: var(--night); background: var(--gold-hi); transform: rotate(-2deg); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); pointer-events: none; }
   .split-mask { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.06em; margin-bottom: -0.06em; }
   .split-char { display: inline-block; }
 </style>

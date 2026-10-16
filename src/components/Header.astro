@@ -1,7 +1,9 @@
 ---
 import Horseman from './Horseman.astro';
 import { club, nav } from '../data/site';
-const path = Astro.url.pathname;
+// путь без подпапки сайта (на GitHub Pages сайт лежит в /peresvet-site/)
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const path = Astro.url.pathname.slice(base.length) || '/';
 const isActive = (href: string) => path === href || path.startsWith(href);
 ---
 

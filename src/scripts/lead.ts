@@ -45,7 +45,9 @@ document.addEventListener('click', (e) => {
 (function scheduleAutoOpen() {
   if (!dialog) return;
   const excluded: string[] = JSON.parse(dialog.dataset.noPopup || '[]');
-  if (excluded.includes(location.pathname)) return;
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const path = location.pathname.slice(base.length) || '/';
+  if (excluded.includes(path)) return;
   if (read(K_SENT)) return;
   const dismissed = Number(read(K_DISMISSED) || 0);
   if (dismissed && Date.now() - dismissed < DISMISS_DAYS * 864e5) return;
@@ -110,6 +112,13 @@ document.querySelectorAll<HTMLFormElement>('[data-lead-form]').forEach((form) =>
     if (name.value.trim().length < 2) return fail('Напишите, как к вам обращаться.', name);
     if (phone.value.replace(/\D/g, '').length < 11) return fail('Проверьте номер телефона: нужно 11 цифр.', phone);
     if (!consent.checked) return fail('Без согласия на обработку данных мы не можем принять заявку.', consent);
+
+    // В превью для тренеров заявки никуда не уходят — честно говорим об этом
+    if (document.documentElement.hasAttribute('data-preview')) {
+      const phoneLink = document.querySelector<HTMLAnchorElement>('.lf-or a');
+      fail(`Это черновик сайта: заявки пока не отправляются. Записаться можно по телефону ${phoneLink?.textContent ?? ''}`);
+      return;
+    }
 
     if (submit) { submit.disabled = true; submit.textContent = 'Отправляем…'; }
     try {
